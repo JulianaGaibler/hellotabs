@@ -1,0 +1,149 @@
+# French translation for HelloTabs
+# Fields marked with (catpun) can have a subtle cat-based pun if paw-sible. Don't force it though!
+
+# This is for the main search input.
+# placeholder: (catpun) Grey text that appears when the input is empty.
+# aria-label: label for screen readers
+search-input:
+  placeholder: Recherrcher vos onglets...
+  aria-label: Rechercher vos onglets
+
+# Label for button with which open tabs are managed
+search-tab-counter: 'Gérer {n, plural, =0 {les onglets} one {l''onglet ouvert} other {{n} onglets ouverts}}'
+
+# (catpun) Text that appears if there are no search results
+search-no-result: Aucun onglet trouvé
+
+# Navigation buttons
+preferences-button: Préférences
+back-button: Retour
+
+# Other buttons
+pin-tab-button: Épingler l'onglet
+unpin-tab-button: Désépingler l'onglet
+close-tab-button: Fermer l'onglet
+close-tabs-above: Fermer les onglets au-dessus
+close-tabs-below: Fermer les onglets en dessous
+mute-tab-button: Couper le son de l'onglet
+unmute-tab-button: Réactiver le son de l'onglet
+
+# Tab management
+close-duplicate-tabs: Fermer les onglets en double
+close-older-than:
+  label: Fermer les onglets plus anciens que...
+  1hour: 1 heure
+  4hours: 4 heures
+  8hours: 8 heures
+  1day: 1 jour
+  1week: 1 semaine
+  1month: 1 mois
+sort-tabs-by-title: Trier les onglets par titre
+sort-tabs-by-url: Trier les onglets par URL
+sort-tabs-by-last-accessed: Trier les onglets par dernier accès
+sort-tabs-by-container: Trier les onglets par conteneur
+group-tabs-by-domain: Grouper les onglets par domaine
+
+# Multi-select
+selection-count: '{n, plural, one {{n} onglet sélectionné} other {{n} onglets sélectionnés}}'
+select-all-tabs: Sélectionner tous les onglets
+deselect-all-tabs: Tout désélectionner
+select-tab: Sélectionner l'onglet
+
+# Edit mode
+edit-tabs-mode: Modifier les onglets
+exit-edit-mode: Terminé
+drag-handle-label: Glisser pour réorganiser l'onglet
+
+# Batch actions
+batch-pin-tabs: Épingler les onglets sélectionnés
+batch-unpin-tabs: Désépingler les onglets sélectionnés
+batch-close-tabs: Fermer les onglets sélectionnés
+batch-add-to-group: Ajouter au groupe
+batch-remove-from-group: Retirer du groupe
+batch-new-group: Nouveau groupe
+
+# Links to source code
+source-code: Code source
+
+# (catpun) Headline of preferences-page
+preferences-header: Préférrences
+
+# Shortcut settings (shortcut is not changeable from within the extension)
+preferences-shortcut-headline: Raccourci clavier
+# url will be inserted into message where {0} is.
+# url is a link to an external documentation (see url-changing-shortcuts-*)
+preferences-shortcut-explanation:
+  message: Vous pouvez modifier le raccourci {0}.
+  url: depuis les paramètres de votre navigateur
+
+# Language settings
+preferences-language-headline: Langue
+# url will be inserted into message where {0} is.
+# url is a link to the git repository
+preferences-language-contribute:
+  message: '{0} HelloTabs dans d''autres langues.'
+  url: Aidez à traduire
+
+# Theme settings
+preferences-theme-headline: Thème
+preferences-theme-explanation: "'Auto' sélectionne le thème en fonction du thème du système."
+
+# Overview settings
+preferences-show-overview-headline: Afficher l'aperçu des onglets
+preferences-show-overview-explanation: Afficher tous les onglets ouverts à l'ouverture de HelloTabs
+
+# Search all windows settings
+preferences-search-all-windows-headline: Rechercher dans toutes les fenêtres
+preferences-search-all-windows-explanation: Rechercher dans toutes les fenêtres au lieu de la fenêtre active uniquement
+
+# Tab groups settings
+preferences-show-tab-groups-headline: Afficher les groupes d'onglets
+preferences-show-tab-groups-explanation: Afficher à quel groupe d'onglets un onglet appartient
+
+# Container tabs settings
+preferences-show-tab-containers-headline: Afficher les onglets conteneurs
+preferences-show-tab-containers-explanation: Afficher à quel conteneur un onglet appartient
+
+# Asking for Recommendation
+preferences-recommend-headline: Vous aimez HelloTabs ?
+preferences-recommend-explanation: Partagez-le avec vos amis ou laissez un avis !
+preferences-recommend-action: Évaluer l'extension
+
+# Support
+preferences-support-headline: Un problème ?
+preferences-support-explanation: Si vous rencontrez des problèmes (y compris d'accessibilité) ou avez des suggestions
+preferences-support-action: Page d'assistance
+
+# Languages
+# Remove all languages except the one being translated and system, so it can fall back to English.
+language-system: Système
+language-name-fr: Français
+
+# Themes
+theme-system: Auto
+theme-light: Clair
+theme-dark: Sombre
+
+# Accent Colors
+accent-color-blue: Bleu
+accent-color-purple: Violet
+accent-color-pink: Rose
+accent-color-red: Rouge
+accent-color-orange: Orange
+accent-color-yellow: Jaune
+accent-color-green: Vert
+accent-color-grey: Gris
+
+# Link to localized documentation on how to change extension shortcuts.
+# Comment out if there is no localized version, so it can fall back to English.
+url-changing-shortcuts-firefox: https://support.mozilla.org/fr/kb/gerer-raccourcis-extensions-firefox
+# url-changing-shortcuts-chrome:
+
+# These translations are for the manifest.json file
+manifest:
+  # Name of the extension
+  name: HelloTabs - changement rapide d'onglets
+  # Short description of the extension
+  description: Extension pour rechercher et basculer entre les onglets en quelques secondes avec un simple raccourci
+  # Description of shortcut to open HelloTabs
+  shortcutOpen: Ouvre HelloTabs

@@ -1,0 +1,149 @@
+# Spanish (Argentina) translation for HelloTabs
+# Fields marked with (catpun) can have a subtle cat-based pun if paw-sible. Don't force it though!
+
+# This is for the main search input.
+# placeholder: (catpun) Grey text that appears when the input is empty.
+# aria-label: label for screen readers
+search-input:
+  placeholder: Buscarrr tus pestañas...
+  aria-label: Buscar tus pestañas
+
+# Label for button with which open tabs are managed
+search-tab-counter: 'Administrar {n, plural, =0 {pestañas} one {pestaña abierta} other {{n} pestañas abiertas}}'
+
+# (catpun) Text that appears if there are no search results
+search-no-result: No se encontraron pestañas
+
+# Navigation buttons
+preferences-button: Preferencias
+back-button: Atrás
+
+# Other buttons
+pin-tab-button: Pegar pestaña
+unpin-tab-button: Despegar pestaña
+close-tab-button: Cerrar pestaña
+close-tabs-above: Cerrar las pestañas arriba
+close-tabs-below: Cerrar las pestañas debajo
+mute-tab-button: Enmudecer pestaña
+unmute-tab-button: Desenmudecer pestaña
+
+# Tab management
+close-duplicate-tabs: Cerrar pestañas duplicadas
+close-older-than:
+  label: Cerrar pestañas anteriores a...
+  1hour: 1 hora
+  4hours: 4 horas
+  8hours: 8 horas
+  1day: 1 día
+  1week: 1 semana
+  1month: 1 mes
+sort-tabs-by-title: Ordenar pestañas por título
+sort-tabs-by-url: Ordenar pestañas por URL
+sort-tabs-by-last-accessed: Ordenar pestañas por último acceso
+sort-tabs-by-container: Ordenar pestañas por contenedor
+group-tabs-by-domain: Agrupar pestañas por dominio
+
+# Multi-select
+selection-count: '{n, plural, one {{n} pestaña seleccionada} other {{n} pestañas seleccionadas}}'
+select-all-tabs: Seleccionar todas las pestañas
+deselect-all-tabs: Deseleccionar todo
+select-tab: Seleccionar pestaña
+
+# Edit mode
+edit-tabs-mode: Editar pestañas
+exit-edit-mode: Listo
+drag-handle-label: Arrastrar para reordenar pestaña
+
+# Batch actions
+batch-pin-tabs: Pegar pestañas seleccionadas
+batch-unpin-tabs: Despegar pestañas seleccionadas
+batch-close-tabs: Cerrar pestañas seleccionadas
+batch-add-to-group: Agregar al grupo
+batch-remove-from-group: Eliminar del grupo
+batch-new-group: Nuevo grupo
+
+# Links to source code
+source-code: Código fuente
+
+# (catpun) Headline of preferences-page
+preferences-header: Preferencias
+
+# Shortcut settings (shortcut is not changeable from within the extension)
+preferences-shortcut-headline: Atajo de teclado
+# url will be inserted into message where {0} is.
+# url is a link to an external documentation (see url-changing-shortcuts-*)
+preferences-shortcut-explanation:
+  message: Podés cambiar el atajo {0}.
+  url: desde la configuración de tu navegador
+
+# Language settings
+preferences-language-headline: Idioma
+# url will be inserted into message where {0} is.
+# url is a link to the git repository
+preferences-language-contribute:
+  message: '{0} HelloTabs a más idiomas.'
+  url: Ayudá a traducir
+
+# Theme settings
+preferences-theme-headline: Tema
+preferences-theme-explanation: "'Auto' selecciona el tema según el tema del sistema."
+
+# Overview settings
+preferences-show-overview-headline: Mostrar vista general de pestañas
+preferences-show-overview-explanation: Mostrar todas las pestañas abiertas al abrir HelloTabs
+
+# Search all windows settings
+preferences-search-all-windows-headline: Buscar en todas las ventanas
+preferences-search-all-windows-explanation: Buscar en todas las ventanas en lugar de solo en la ventana actual
+
+# Tab groups settings
+preferences-show-tab-groups-headline: Mostrar grupos de pestañas
+preferences-show-tab-groups-explanation: Mostrar a qué grupo de pestañas pertenece una pestaña
+
+# Container tabs settings
+preferences-show-tab-containers-headline: Mostrar pestañas contenedoras
+preferences-show-tab-containers-explanation: Mostrar a qué contenedor pertenece una pestaña
+
+# Asking for Recommendation
+preferences-recommend-headline: ¿Te gusta HelloTabs?
+preferences-recommend-explanation: ¡Compartilo con tus amigos o dejanos una valoración!
+preferences-recommend-action: Valorar extensión
+
+# Support
+preferences-support-headline: ¿Tenés problemas?
+preferences-support-explanation: Si tenés problemas (incluyendo de accesibilidad) o sugerencias
+preferences-support-action: Página de soporte
+
+# Languages
+# Remove all languages except the one being translated and system, so it can fall back to English.
+language-system: Sistema
+language-name-es_AR: Español (Argentina)
+
+# Themes
+theme-system: Auto
+theme-light: Claro
+theme-dark: Oscuro
+
+# Accent Colors
+accent-color-blue: Azul
+accent-color-purple: Violeta
+accent-color-pink: Rosa
+accent-color-red: Rojo
+accent-color-orange: Naranja
+accent-color-yellow: Amarillo
+accent-color-green: Verde
+accent-color-grey: Gris
+
+# Link to localized documentation on how to change extension shortcuts.
+# Comment out if there is no localized version, so it can fall back to English.
+url-changing-shortcuts-firefox: https://support.mozilla.org/es/kb/gestionar-atajos-extensiones-firefox
+# url-changing-shortcuts-chrome:
+
+# These translations are for the manifest.json file
+manifest:
+  # Name of the extension
+  name: HelloTabs - cambio rápido de pestañas
+  # Short description of the extension
+  description: Extensión para buscar y cambiar entre pestañas en segundos con un simple atajo
+  # Description of shortcut to open HelloTabs
+  shortcutOpen: Abre HelloTabs

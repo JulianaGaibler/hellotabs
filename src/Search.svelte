@@ -10,6 +10,7 @@
   import HelloTabsNoResult from '@src/assets/cat_noresults.svg?raw'
   import iconDropdown from 'tint/icons/14-dropdown.svg?raw'
   import TabItem from '@src/components/TabItem.svelte'
+  import SelectionBar from '@src/components/SelectionBar.svelte'
   import tabs from '@src/utils/tab-store'
   import Fuse from 'fuse.js'
   import fuseHighlight, { type HighlightResult } from './utils/fuse-highlight'
@@ -18,8 +19,18 @@
   import tabGroups from '@src/utils/group-store'
   import stateStore from '@src/utils/state-store'
   import GroupItem from './components/GroupItem.svelte'
-  import { tabActions, closeTabsAbove, closeTabsBelow } from './utils/tab-actions'
+  import { tabActions, closeTabsAbove, closeTabsBelow, moveTabs } from './utils/tab-actions'
+  import { reorderable, type ReorderEventDetail } from 'tint'
   import { onMount, untrack } from 'svelte'
+  import {
+    selectionStore,
+    toggleSelect,
+    selectRange,
+    selectAll,
+    deselectAll,
+    exitEditMode,
+    addToSelection,
+  } from '@src/utils/selection-store'
 
   const INDEX_OPTIONS = { keys: ['title', 'url'], includeMatches: true }
 
@@ -49,6 +60,33 @@
     totalIndices: 0,
     activeTabIndex: 0,
   })
+
+  let hasSelection = $derived($selectionStore.selected.size > 0)
+  let editMode = $derived($selectionStore.editMode)
+  let isSearching = $derived(searchString.trim().length > 0)
+  let pendingFocusTabId: number | null = $state(null)
+
+  function handleReorder(detail: ReorderEventDetail) {
+    if (isSearching) return
+    const draggedTabId = Number(detail.draggedElement.getAttribute('data-tab-id'))
+    const targetTabId = Number(detail.targetElement.getAttribute('data-tab-id'))
+    if (!draggedTabId || !targetTabId) return
+    pendingFocusTabId = draggedTabId
+    moveTabs(draggedTabId, targetTabId, detail.position, $tabs, $selectionStore.selected)
+  }
+
+  function handleSelectionClick(tabId: number, event: MouseEvent | KeyboardEvent) {
+    if (event instanceof MouseEvent && event.shiftKey && $selectionStore.lastClickedIndex !== null) {
+      // Find index of current tab in searchResults
+      const currentIndex = searchResults.findIndex((t) => t.id === tabId)
+      if (currentIndex !== -1) {
+        selectRange($selectionStore.lastClickedIndex, currentIndex, searchResults)
+      }
+    } else {
+      const currentIndex = searchResults.findIndex((t) => t.id === tabId)
+      toggleSelect(tabId, currentIndex !== -1 ? currentIndex : undefined)
+    }
+  }
 
   function updateFuseInstance(tabs: extAPI.CombinedTab[]) {
     const index = Fuse.createIndex(INDEX_OPTIONS.keys, tabs)
@@ -122,6 +160,23 @@
           !$stateStore.preferences?.showGroupTabs,
       )
       onUpdateListItems(groupResults.groupIndices)
+
+      // After reorder, focus the moved tab at its new position
+      if (pendingFocusTabId !== null) {
+        const tabId = pendingFocusTabId
+        pendingFocusTabId = null
+        for (const item of groupResults.groupIndices) {
+          if (item.type === 'tabs') {
+            for (const tabInfo of item.items) {
+              if (searchResults[tabInfo.tabIndex]?.id === tabId) {
+                focus = [tabInfo.focusIndex, 0]
+                searchFieldFocus = false
+                break
+              }
+            }
+          }
+        }
+      }
     })
   })
 
@@ -154,26 +209,65 @@
   })
 
   function handleKeydown(e: KeyboardEvent) {
+    // Let Ctrl+Shift+Arrow propagate to reorderable action
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && e.ctrlKey && e.shiftKey) {
+      return
+    }
     if (e.key === 'ArrowDown') {
       e.preventDefault()
       searchFieldFocus = false
-      changeFocus(1)
+      if (e.shiftKey) {
+        // Add current tab to selection
+        const currentTab = getTabAtFocus(focus[0])
+        if (currentTab?.id !== undefined) {
+          addToSelection(currentTab.id, focus[0])
+        }
+        // Reset to main button if on action button
+        if (focus[1] > 0) focus = [focus[0], 0]
+        changeFocus(1)
+        // Add newly focused tab to selection
+        const newTab = getTabAtFocus(focus[0])
+        if (newTab?.id !== undefined) {
+          addToSelection(newTab.id, focus[0])
+        }
+      } else {
+        changeFocus(1)
+      }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
       searchFieldFocus = false
-      changeFocus(-1)
+      if (e.shiftKey) {
+        // Add current tab to selection
+        const currentTab = getTabAtFocus(focus[0])
+        if (currentTab?.id !== undefined) {
+          addToSelection(currentTab.id, focus[0])
+        }
+        // Reset to main button if on action button
+        if (focus[1] > 0) focus = [focus[0], 0]
+        changeFocus(-1)
+        // Add newly focused tab to selection
+        const newTab = getTabAtFocus(focus[0])
+        if (newTab?.id !== undefined) {
+          addToSelection(newTab.id, focus[0])
+        }
+      } else {
+        changeFocus(-1)
+      }
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault()
       searchFieldFocus = false
-      focusLeftFns[searchResults[focus[0]].id || '_']?.()
+      const key = getTabAtFocus(focus[0])?.id || '_'
+      focusLeftFns[key]?.()
     } else if (e.key === 'ArrowRight') {
       e.preventDefault()
       searchFieldFocus = false
-      focusRightFns[searchResults[focus[0]].id || '_']?.()
+      const key = getTabAtFocus(focus[0])?.id || '_'
+      focusRightFns[key]?.()
+
     } else if (e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey) || (e.key === 'm' && (e.ctrlKey || e.metaKey))) {
       e.preventDefault()
-      if (!searchFieldFocus && focus[0] >= 0 && searchResults[focus[0]]) {
-        const focusedTab = searchResults[focus[0]]
+      const focusedTab = getTabAtFocus(focus[0])
+      if (!searchFieldFocus && focus[0] >= 0 && focusedTab) {
         const contextHandler = handleContextMenu(focusedTab)
 
         // Create a synthetic mouse event with coordinates for the context menu
@@ -186,6 +280,23 @@
 
         contextHandler(syntheticEvent)
       }
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      if ($selectionStore.editMode) {
+        exitEditMode()
+      } else if ($selectionStore.selected.size > 0) {
+        deselectAll()
+      }
+    } else if (e.key === ' ' && !searchFieldFocus && focus[0] >= 0 && focus[1] === 0) {
+      e.preventDefault()
+      const tab = getTabAtFocus(focus[0])
+      if (tab?.id !== undefined) {
+        const currentIndex = focus[0]
+        toggleSelect(tab.id, currentIndex)
+      }
+    } else if (e.key === 'a' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      selectAll(searchResults)
     } else if (e.key === 'Backspace' && searchString.trim().length > 0) {
       searchField?.focus()
     } else if (
@@ -202,7 +313,7 @@
   function handleInputKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter') {
       e.preventDefault()
-      const tabId = searchResults[focus[0]].id
+      const tabId = getTabAtFocus(focus[0])?.id
       if (tabId) {
         extAPI.openTab(tabId)
       }
@@ -283,6 +394,18 @@
     ]
   }
 
+  function getTabAtFocus(focusIdx: number): HighlightResult<extAPI.CombinedTab> | undefined {
+    for (const item of groupResults.groupIndices) {
+      if (item.type !== 'tabs') continue
+      for (const tabInfo of item.items) {
+        if (tabInfo.focusIndex === focusIdx) {
+          return searchResults[tabInfo.tabIndex]
+        }
+      }
+    }
+    return undefined
+  }
+
   function handleContextMenu(tab: HighlightResult<extAPI.CombinedTab>) {
     return (e: Event) => {
       contextMenuItems = createContextMenu(tab)
@@ -338,6 +461,9 @@
   </div>
 {:else}
   <div class="main-area" tabindex="-1">
+    {#if hasSelection || editMode}
+      <SelectionBar {searchResults} />
+    {/if}
     {#each groupResults.groupIndices as item}
       {#if item.type === 'group'}
         <GroupItem
@@ -349,7 +475,16 @@
           collapsed={item.collapsed}
         />
       {:else if item.type === 'tabs'}
-        <ul id={`group-${item.groupId || ''}`}>
+        <ul
+          id={`group-${item.groupId || ''}`}
+          use:reorderable={{
+            itemSelector: 'li',
+            handleSelector: editMode ? '.drag-handle' : undefined,
+            enableKeyboardReorder: !isSearching,
+            onreorder: handleReorder,
+            dropGroup: 'tabs',
+          }}
+        >
           {#each item.items as tabInfo (searchResults[tabInfo.tabIndex].id)}
             <TabItem
               tab={searchResults[tabInfo.tabIndex]}
@@ -361,6 +496,9 @@
               bind:focusRight={
                 focusRightFns[searchResults[tabInfo.tabIndex].id || '_']
               }
+              selected={$selectionStore.selected.has(searchResults[tabInfo.tabIndex].id ?? -1)}
+              {editMode}
+              onselect={handleSelectionClick}
               onactionat={handleFocusChange}
               onfocusset={(index) => {
                 if (index === 0) {
@@ -412,6 +550,14 @@
     > :global(svg)
       width: 8px
       height: 8px
+
+  .main-area
+    :global(li.dragging)
+      opacity: 0.5
+    :global(li[draggable="true"]:hover)
+      cursor: grab
+    :global(li[draggable="true"]:active)
+      cursor: grabbing
 
   .main-area, ul, .no-result
     display: flex

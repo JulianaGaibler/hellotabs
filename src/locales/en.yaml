@@ -43,6 +43,25 @@ sort-tabs-by-last-accessed: Sort tabs by last accessed
 sort-tabs-by-container: Sort tabs by container
 group-tabs-by-domain: Group tabs by domain
 
+# Multi-select
+selection-count: '{n, plural, one {{n} tab selected} other {{n} tabs selected}}'
+select-all-tabs: Select all tabs
+deselect-all-tabs: Deselect all tabs
+select-tab: Select tab
+
+# Edit mode
+edit-tabs-mode: Edit tabs
+exit-edit-mode: Done
+drag-handle-label: Drag to reorder tab
+
+# Batch actions
+batch-pin-tabs: Pin selected tabs
+batch-unpin-tabs: Unpin selected tabs
+batch-close-tabs: Close selected tabs
+batch-add-to-group: Add to group
+batch-remove-from-group: Remove from group
+batch-new-group: New group
+
 # Links to source code
 source-code: Source Code
 
@@ -100,8 +119,12 @@ preferences-support-action: Support page
 language-system: System
 language-name-en: English
 language-name-de: German
-language-name-pt-BR: Portuguese (Brazil)
-language-name-pt-PT: Portuguese (Portugal)
+language-name-pt_BR: Portuguese (Brazil)
+language-name-pt_PT: Portuguese (Portugal)
+language-name-fr: French
+language-name-es: Spanish (Spain)
+language-name-es_AR: Spanish (Argentina)
+language-name-es_MX: Spanish (Mexico)
 
 # Themes
 theme-system: Auto

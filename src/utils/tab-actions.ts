@@ -8,6 +8,7 @@ import {
 } from './extension-api'
 import stateStore from '@src/utils/state-store'
 import { MENU_SEPARATOR, type MenuItem } from 'tint/components/Menu.svelte'
+import { enterEditMode } from './selection-store'
 
 const GROUP_CREATION_THRESHOLD = 3
 
@@ -25,6 +26,11 @@ function actionGuard(fn: () => Promise<void>) {
 }
 
 const allActions: (MenuItem | boolean)[] = [
+  {
+    label: 'edit-tabs-mode',
+    onClick: () => enterEditMode(),
+  },
+  MENU_SEPARATOR,
   {
     label: 'close-duplicate-tabs',
     onClick: actionGuard(closeDuplicateTabs),
@@ -260,6 +266,70 @@ function cleanURL(url: string) {
     urlObj.searchParams.delete(param)
   }
   return urlObj.toString()
+}
+
+export async function moveTabs(
+  draggedTabId: number,
+  targetTabId: number,
+  position: -1 | 0,
+  allTabs: CombinedTab[],
+  selectedIds: Set<number>,
+) {
+  // Determine tabs to move
+  let moveIds: number[]
+  if (selectedIds.has(draggedTabId) && selectedIds.size > 1) {
+    // Multi-select: all selected, sorted by current browser index
+    moveIds = allTabs
+      .filter(t => t.id !== undefined && selectedIds.has(t.id))
+      .map(t => t.id!)
+  } else {
+    moveIds = [draggedTabId]
+  }
+
+  // Get target's browser index
+  const targetTab = allTabs.find(t => t.id === targetTabId)
+  if (targetTab?.index === undefined) return
+
+  // Compute insert index
+  let insertIndex = position === -1 ? targetTab.index : targetTab.index + 1
+
+  // Adjust: chrome.tabs.move index is the position AFTER removing moved tabs
+  const moveSet = new Set(moveIds)
+  const countBefore = allTabs.filter(
+    t => t.id !== undefined && moveSet.has(t.id) && t.index! < insertIndex,
+  ).length
+  insertIndex -= countBefore
+
+  await thisBrowser?.tabs.move(moveIds, { index: insertIndex })
+}
+
+export function closeTabs(ids: number[]) {
+  if (ids.length === 0) return
+  thisBrowser?.tabs.remove(ids)
+}
+
+export function pinTabs(ids: number[], pinned: boolean) {
+  for (const id of ids) {
+    thisBrowser?.tabs.update(id, { pinned })
+  }
+}
+
+export async function addTabsToGroup(ids: number[], groupId?: number) {
+  if (!hasTabGroupSupport || typeof chrome === 'undefined' || ids.length === 0) return
+  const tabIds = ids as [number, ...number[]]
+  if (groupId !== undefined) {
+    await chrome.tabs.group({ tabIds, groupId })
+  } else {
+    await chrome.tabs.group({
+      tabIds,
+      createProperties: { windowId: chrome.windows.WINDOW_ID_CURRENT },
+    })
+  }
+}
+
+export async function removeTabsFromGroup(ids: number[]) {
+  if (!hasTabGroupSupport || typeof chrome === 'undefined' || ids.length === 0) return
+  await chrome.tabs.ungroup(ids as [number, ...number[]])
 }
 
 const STRIP = [

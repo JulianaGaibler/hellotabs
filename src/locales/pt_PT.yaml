@@ -43,6 +43,25 @@ sort-tabs-by-last-accessed: Ordenar separadores por último acesso
 sort-tabs-by-container: Ordenar separadores por contêiner
 group-tabs-by-domain: Agrupar separadores por domínio
 
+# Multi-select
+selection-count: '{n, plural, one {{n} separador selecionado} other {{n} separadores selecionados}}'
+select-all-tabs: Selecionar todos os separadores
+deselect-all-tabs: Desmarcar todos os separadores
+select-tab: Selecionar separador
+
+# Edit mode
+edit-tabs-mode: Editar separadores
+exit-edit-mode: Concluído
+drag-handle-label: Arraste para reordenar o separador
+
+# Batch actions
+batch-pin-tabs: Fixar separadores selecionados
+batch-unpin-tabs: Desafixar separadores selecionados
+batch-close-tabs: Fechar separadores selecionados
+batch-add-to-group: Adicionar ao grupo
+batch-remove-from-group: Remover do grupo
+batch-new-group: Novo grupo
+
 # Links to source code
 source-code: Código-fonte
 
@@ -97,7 +116,8 @@ preferences-support-action: Página de suporte
 
 # Languages
 language-system: Sistema
-language-name-pt-PT: Português (Portugal)
+language-name-pt_BR: Português (Brasil)
+language-name-pt_PT: Português (Portugal)
 
 # Themes
 theme-system: Automático

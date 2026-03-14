@@ -43,6 +43,25 @@ sort-tabs-by-last-accessed: Tabs nach letztem Zugriff sortieren
 sort-tabs-by-container: Tabs nach Umgebungen sortieren
 group-tabs-by-domain: Tabs nach Domain gruppieren
 
+# Multi-select
+selection-count: '{n, plural, one {{n} Tab ausgewählt} other {{n} Tabs ausgewählt}}'
+select-all-tabs: Alle Tabs auswählen
+deselect-all-tabs: Auswahl aufheben
+select-tab: Tab auswählen
+
+# Edit mode
+edit-tabs-mode: Tabs bearbeiten
+exit-edit-mode: Fertig
+drag-handle-label: Ziehen, um Tab neu anzuordnen
+
+# Batch actions
+batch-pin-tabs: Ausgewählte Tabs anheften
+batch-unpin-tabs: Ausgewählte Tabs lösen
+batch-close-tabs: Ausgewählte Tabs schließen
+batch-add-to-group: Zur Gruppe hinzufügen
+batch-remove-from-group: Aus Gruppe entfernen
+batch-new-group: Neue Gruppe
+
 # Links to source code
 source-code: Quellcode
 

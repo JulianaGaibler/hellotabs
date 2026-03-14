@@ -6,7 +6,7 @@
   "version": "<generated from package.json>",
   "browser_specific_settings": {
     "gecko": {
-      "id": "support@juliana.me",
+      "id": "tabby@jwels.berlin",
       "strict_min_version": "109.0"
     }
   },

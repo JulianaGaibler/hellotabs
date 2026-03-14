@@ -43,6 +43,25 @@ sort-tabs-by-last-accessed: Ordenar abas por último acesso
 sort-tabs-by-container: Ordenar abas por contêiner
 group-tabs-by-domain: Agrupar abas por domínio
 
+# Multi-select
+selection-count: '{n, plural, one {{n} aba selecionada} other {{n} abas selecionadas}}'
+select-all-tabs: Selecionar todas as abas
+deselect-all-tabs: Desmarcar todas as abas
+select-tab: Selecionar aba
+
+# Edit mode
+edit-tabs-mode: Editar abas
+exit-edit-mode: Concluído
+drag-handle-label: Arraste para reordenar a aba
+
+# Batch actions
+batch-pin-tabs: Fixar abas selecionadas
+batch-unpin-tabs: Desafixar abas selecionadas
+batch-close-tabs: Fechar abas selecionadas
+batch-add-to-group: Adicionar ao grupo
+batch-remove-from-group: Remover do grupo
+batch-new-group: Novo grupo
+
 # Links to source code
 source-code: Código-fonte
 
@@ -96,7 +115,8 @@ preferences-support-action: Página de suporte
 
 # Languages
 language-system: Sistema
-language-name-pt-BR: Português (Brasil)
+language-name-pt_BR: Português (Brasil)
+language-name-pt_PT: Português (Portugal)
 
 # Themes
 theme-system: Automático

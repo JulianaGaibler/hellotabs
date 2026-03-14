@@ -1,12 +1,14 @@
 <script lang="ts">
   import { _ } from 'svelte-i18n'
   import Button from 'tint/components/Button.svelte'
+  import Toggleable from 'tint/components/Toggleable.svelte'
   import HelloTabsIcon from '@src/assets/icon.svg?raw'
   import iconAudio from 'tint/icons/20-volume-off.svg?raw'
   import iconAudioOff from 'tint/icons/20-volume-up.svg?raw'
   import iconPin from 'tint/icons/20-push-pin.svg?raw'
   import iconPinFill from 'tint/icons/20-push-pin-fill.svg?raw'
   import iconClose from 'tint/icons/20-close.svg?raw'
+  import iconDragHandle from 'tint/icons/14-drag-handle.svg?raw'
   import { onMount } from 'svelte'
   import type { HighlightResult } from '@src/utils/fuse-highlight'
   import * as extAPI from '@src/utils/extension-api'
@@ -20,6 +22,9 @@
     nth: number
     focus: [number, number]
     claimFocus: boolean
+    selected?: boolean
+    editMode?: boolean
+    onselect?: (tabId: number, event: MouseEvent | KeyboardEvent) => void
     onactionat?: (index: number) => void
     onfocusset?: (index: number) => void
     oncontextmenu?: (e: Event) => void
@@ -32,6 +37,9 @@
     nth,
     focus = $bindable(),
     claimFocus,
+    selected = false,
+    editMode = false,
+    onselect = undefined,
     onactionat = undefined,
     onfocusset = undefined,
     oncontextmenu = undefined,
@@ -44,32 +52,43 @@
     undefined,
     undefined,
     undefined,
+    undefined,
   ])
+
+  let checkboxEl: HTMLInputElement | HTMLButtonElement | undefined = $state(undefined)
+
+  $effect(() => {
+    buttons[0] = editMode ? checkboxEl : undefined
+  })
 
   onMount(() => {
     focusElement(focus)
   })
 
   const focusLeftFn = () => {
-    if (!claimFocus) {
-      return
-    } else if (document.dir == 'rtl') moveFocusRight()
+    if (!claimFocus) return
+    else if (document.dir == 'rtl') moveFocusRight()
     else moveFocusLeft()
   }
   const focusRightFn = () => {
-    if (!claimFocus) {
-      return
-    } else if (document.dir == 'rtl') moveFocusLeft()
+    if (!claimFocus) return
+    else if (document.dir == 'rtl') moveFocusLeft()
     else moveFocusRight()
   }
 
   focusLeft = focusLeftFn
   focusRight = focusRightFn
 
+  function resolveActualIndex(): number {
+    if (buttons[focus[1]]) return focus[1]
+    for (let i = focus[1]; i < buttons.length; i++) {
+      if (buttons[i]) return i
+    }
+    return focus[1]
+  }
+
   function moveFocusLeft() {
-    // find the next focusable element in buttons element.
-    // if we reach the end of the list, do nothing
-    let current = focus[1]
+    let current = resolveActualIndex()
     while (current > 0) {
       current--
       if (buttons[current]) {
@@ -79,9 +98,7 @@
     }
   }
   function moveFocusRight() {
-    // find the next focusable element in buttons element.
-    // if we reach the end of the list, do nothing
-    let current = focus[1]
+    let current = resolveActualIndex()
     while (current < buttons.length - 1) {
       current++
       if (buttons[current]) {
@@ -92,41 +109,61 @@
   }
 
   function focusElement(f: [number, number]) {
-    // Skip if this tab is not focused or we don't want to claim focus
-    if (f[0] !== nth) {
-      return
-    }
-    buttons[0]?.scrollIntoView({
+    if (f[0] !== nth) return
+    buttons[1]?.scrollIntoView({
       behavior: claimFocus ? 'smooth' : 'instant',
       block: claimFocus ? 'nearest' : 'center',
     })
-    if (!claimFocus) {
-      return
-    }
-    // If the focus is 0, focus the first button
-    if (f[1] === 0) {
-      buttons[0]?.focus()
-      return
-    }
-    // otherwise we try to select the button at the given index,
-    // if it does not exist we go up until we find one that does
+    if (!claimFocus) return
     for (let i = f[1]; i < buttons.length; i++) {
       if (buttons[i]) {
         buttons[i]?.focus()
         return
       }
     }
-    // otherwise, focus the last button
-    buttons[buttons.length - 1]?.focus()
   }
 
   function isFocused(f: [number, number], i: number) {
     return f[0] === nth && f[1] === i
   }
 
-  function openTab() {
+  function handleTabClick(e: MouseEvent) {
+    // Ctrl/Cmd+click or Shift+click: selection
+    if (e.ctrlKey || e.metaKey || e.shiftKey) {
+      e.preventDefault()
+      if (tab?.id !== undefined) {
+        onselect?.(tab.id, e)
+      }
+      return
+    }
+    // In edit mode: toggle selection
+    if (editMode) {
+      e.preventDefault()
+      if (tab?.id !== undefined) {
+        onselect?.(tab.id, e)
+      }
+      return
+    }
+    // Normal click: open tab
     tab?.id && extAPI.openTab(tab.id)
     onactionat?.(nth)
+  }
+
+  function handleTabButtonEnter() {
+    if (editMode) {
+      if (tab?.id !== undefined) {
+        onselect?.(tab.id, new MouseEvent('click'))
+      }
+      return
+    }
+    tab?.id && extAPI.openTab(tab.id)
+    onactionat?.(nth)
+  }
+
+  function handleCheckboxChange() {
+    if (tab?.id !== undefined) {
+      onselect?.(tab.id, new MouseEvent('click'))
+    }
   }
   function togglePinTab() {
     tab?.id && extAPI.updateTabs(tab.id, { pinned: !tab.pinned })
@@ -166,17 +203,40 @@
 </script>
 
 <li
-  class:focus={isFocused(focus, 0)}
+  data-tab-id={tab.id}
+  class:focus={focus[0] === nth}
+  class:focus-main={focus[0] === nth && (focus[1] === 1 || (!editMode && focus[1] === 0))}
   class:current={tab.active}
+  class:selected
   class={`chromeGroupColor ${$tabGroups[tab.groupId]?.color || ''}`}
 >
+  {#if editMode}
+    <span class="drag-handle" aria-label={$_('drag-handle-label')}>
+      {@html iconDragHandle}
+    </span>
+  {/if}
+  {#if editMode || selected}
+    <div class="checkbox-area">
+      <Toggleable
+        bind:element={checkboxEl}
+        id={`tab-checkbox-${tab.id}`}
+        type="checkbox"
+        checked={selected}
+        onchange={handleCheckboxChange}
+        onkeydown={(e) => runIfEnter(e, handleCheckboxChange)}
+        aria-label={$_('select-tab') + ' - ' + tab.title}
+        tabindex={editMode && isFocused(focus, 0) ? 0 : -1}
+      />
+    </div>
+  {/if}
   <button
     class="tab-button"
-    bind:this={buttons[0]}
-    tabindex={isFocused(focus, 0) ? 0 : -1}
-    onclick={openTab}
-    onkeydown={(e) => runIfEnter(e, openTab)}
+    bind:this={buttons[1]}
+    tabindex={isFocused(focus, 1) ? 0 : -1}
+    onclick={handleTabClick}
+    onkeydown={(e) => runIfEnter(e, handleTabButtonEnter)}
     oncontextmenu={oncontextmenu}
+    aria-pressed={editMode ? selected : undefined}
   >
     <div
       class="favicon"
@@ -224,12 +284,12 @@
   <div class="actions">
     {#if tab.audible || tab.mutedInfo?.muted}
       <Button
-        bind:element={buttons[1]}
+        bind:element={buttons[2]}
         icon={true}
         onclick={toggleMuteTab}
         onkeydown={(e) => runIfEnter(e, toggleMuteTab)}
         small={true}
-        tabindex={isFocused(focus, 1) ? 0 : -1}
+        tabindex={isFocused(focus, 2) ? 0 : -1}
         title={$_('mute-tab-button')}
         variant="ghost"
         >{@html tab.mutedInfo?.muted ? iconAudio : iconAudioOff}</Button
@@ -237,24 +297,24 @@
     {/if}
     {#if tab.pinned || focus[0] === nth || true}
       <Button
-        bind:element={buttons[2]}
+        bind:element={buttons[3]}
         icon={true}
         onclick={togglePinTab}
         onkeydown={(e) => runIfEnter(e, togglePinTab)}
         small={true}
-        tabindex={isFocused(focus, 2) ? 0 : -1}
+        tabindex={isFocused(focus, 3) ? 0 : -1}
         title={$_('pin-tab-button')}
         toggled={tab.pinned}
         variant="ghost">{@html tab.pinned ? iconPinFill : iconPin}</Button
       >
     {/if}
     <Button
-      bind:element={buttons[3]}
+      bind:element={buttons[4]}
       icon={true}
       onclick={closeTab}
       onkeydown={(e) => runIfEnter(e, closeTab)}
       small={true}
-      tabindex={isFocused(focus, 3) ? 0 : -1}
+      tabindex={isFocused(focus, 4) ? 0 : -1}
       title={$_('close-tab-button')}
       variant="ghost"
       >{@html iconClose}
@@ -289,8 +349,10 @@
     .text
       flex-grow: 1
       min-width: 0
-    &:focus
-      outline: none
+    &:focus-visible
+      outline: 2px solid var(--tint-action-primary)
+      outline-offset: -2px
+      border-radius: tint.$size-8
     &:active
       background: var(--tint-action-secondary-active)
 
@@ -305,7 +367,7 @@
 
   .favicon.grouped
     outline: 2px solid var(--special-color-bg)
-  .focus .favicon.grouped
+  .focus-main .favicon.grouped
     box-shadow: 0 0 0 4px #fff, inset 0 0 0 4px #fff
     @media (prefers-color-scheme: dark)
       box-shadow: 0 0 0 4px #00000066, inset 0 0 0 2px #00000066
@@ -333,6 +395,9 @@
       color: var(--tint-text)
 
   .focus
+    background: var(--tint-input-bg)
+
+  .focus-main
     background: var(--tint-action-primary)
     color: var(--tint-bg)
     .favicon
@@ -345,6 +410,11 @@
       color: var(--tint-action-text)
     .actions > :global(button)
       color: var(--tint-action-text)
+    .actions > :global(button:focus-visible)
+      outline-color: var(--tint-action-text)
+    .checkbox-area :global(input:focus-visible)
+      outline: 2px solid var(--tint-action-text)
+      outline-offset: 2px
 
 
   .sub
@@ -366,4 +436,33 @@
     :global(> span > svg)
       height: tint.$size-12
       width: tint.$size-12
+
+  .selected
+    background: color-mix(in srgb, var(--tint-action-primary) 12%, transparent)
+
+  .focus-main .checkbox-area :global(input)
+    border-color: var(--tint-action-text)
+  .focus-main .checkbox-area :global(input:checked)
+    background-color: var(--tint-action-text)
+    color: var(--tint-action-primary)
+
+  .drag-handle
+    display: flex
+    align-items: center
+    padding-inline-start: tint.$size-8
+    color: var(--tint-text-secondary)
+    line-height: 0
+    cursor: grab
+    user-select: none
+    &:active
+      cursor: grabbing
+    :global(svg)
+      width: 14px
+      height: 14px
+
+  .checkbox-area
+    display: flex
+    align-items: center
+    padding-inline-start: tint.$size-12
+    flex-shrink: 0
 </style>
