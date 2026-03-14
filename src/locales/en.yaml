@@ -1,4 +1,4 @@
-# English translation for tabby
+# English translation for HelloTabs
 # Fields marked with (catpun) can have a subtle cat-based but if paw-sible. Don't force it though!
 
 # This is for the main search input.
@@ -19,11 +19,13 @@ preferences-button: Preferences
 back-button: Back
 
 # Other buttons
-pin-tab-button: pin tab
-unpin-tab-button: unpin tab
-close-tab-button: close tab
-mute-tab-button: mute tab
-unmute-tab-button: unmute tab
+pin-tab-button: Pin tab
+unpin-tab-button: Unpin tab
+close-tab-button: Close tab
+close-tabs-above: Close tabs above
+close-tabs-below: Close tabs below
+mute-tab-button: Mute tab
+unmute-tab-button: Unmute tab
 
 # Tab management
 close-duplicate-tabs: Close duplicate tabs
@@ -60,7 +62,7 @@ preferences-language-headline: Language
 # url will be inserted into message where {0} is.
 # url is a link to the git repository
 preferences-language-contribute:
-  message: '{0} tabby into more languages.'
+  message: '{0} HelloTabs into more languages.'
   url: Help to translate
 
 # Theme settings
@@ -69,7 +71,7 @@ preferences-theme-explanation: "'Auto' selects the theme based on the systems th
 
 # Overview settings
 preferences-show-overview-headline: Show tab overview
-preferences-show-overview-explanation: Show all open tabs when you open tabby
+preferences-show-overview-explanation: Show all open tabs when you open HelloTabs
 
 # Search all windows settings
 preferences-search-all-windows-headline: Search all windows
@@ -84,7 +86,7 @@ preferences-show-tab-containers-headline: Show container tabs
 preferences-show-tab-containers-explanation: Show which container a tab is in
 
 # Asking for Recommendation
-preferences-recommend-headline: Do you like tabby?
+preferences-recommend-headline: Do you like HelloTabs?
 preferences-recommend-explanation: Share it with your friends or review it!
 preferences-recommend-action: Rate extension
 
@@ -119,13 +121,13 @@ accent-color-grey: Gray
 # Link to localized documentation on how to change extension shortcuts.
 # Comment out if there is no localized version, so it can fall back to english.
 url-changing-shortcuts-firefox: https://support.mozilla.org/en-US/kb/manage-extension-shortcuts-firefox
-url-changing-shortcuts-chrome: https://juliana.me/tabby/chrome-shortcut/
+url-changing-shortcuts-chrome: https://juliana.me/hello-tabs/chrome-shortcut/
 
 # These translations are for the manifest.json file
 manifest:
   # Name of the extension
-  name: tabby - fast tab switching
+  name: HelloTabs - fast tab switching
   # Short description of the extension
   description: Extension to search for and switch between tabs in seconds with a simple shortcut
-  # Description of shortcut to open tabby
-  shortcutOpen: Opens tabby
+  # Description of shortcut to open HelloTabs
+  shortcutOpen: Opens HelloTabs

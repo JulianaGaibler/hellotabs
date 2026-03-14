@@ -1,4 +1,4 @@
-# German translation for tabby
+# German translation for HelloTabs
 # Fields marked with (catpun) can have a subtle cat-based pun if paw-sible. Don't force it though!
 
 # This is for the main search input.
@@ -22,6 +22,8 @@ back-button: Zurück
 pin-tab-button: Tab anheften
 unpin-tab-button: Tab lösen
 close-tab-button: Tab schließen
+close-tabs-above: Tabs darüber schließen
+close-tabs-below: Tabs darunter schließen
 mute-tab-button: Tab stummschalten
 unmute-tab-button: Stummschaltung aufheben
 
@@ -60,7 +62,7 @@ preferences-language-headline: Sprache
 # url will be inserted into message where {0} is.
 # url is a link to the git repository
 preferences-language-contribute:
-  message: '{0} tabby in weitere Sprachen zu übersetzen.'
+  message: '{0} HelloTabs in weitere Sprachen zu übersetzen.'
   url: Hilf mit
 
 # Theme settings
@@ -69,7 +71,7 @@ preferences-theme-explanation: "'Automatisch' wählt das Theme basierend auf dem
 
 # Overview settings
 preferences-show-overview-headline: Tab-Übersicht anzeigen
-preferences-show-overview-explanation: Alle offenen Tabs anzeigen, wenn du tabby öffnest
+preferences-show-overview-explanation: Alle offenen Tabs anzeigen, wenn du HelloTabs öffnest
 
 # Search all windows settings
 preferences-search-all-windows-headline: In allen Fenstern suchen
@@ -84,7 +86,7 @@ preferences-show-tab-containers-headline: Container-Tabs anzeigen
 preferences-show-tab-containers-explanation: Zeig an zu welchem Container ein Tab gehört
 
 # Asking for Recommendation
-preferences-recommend-headline: Gefällt dir tabby?
+preferences-recommend-headline: Gefällt dir HelloTabs?
 preferences-recommend-explanation: Teile es mit deinen Freunden oder bewerte es
 preferences-recommend-action: Erweiterung bewerten
 
@@ -121,8 +123,8 @@ url-changing-shortcuts-firefox: https://support.mozilla.org/de/kb/tastenkombinat
 # These translations are for the manifest.json file
 manifest:
   # Name of the extension
-  name: tabby - schnelles tab wechseln
+  name: HelloTabs - schnelles tab wechseln
   # Short description of the extension
   description: Erweiterung zum Suchen und Wechseln zwischen Tabs in Sekundenschnelle mit einer einfachen Tastenkombination
-  # Description of shortcut to open tabby
-  shortcutOpen: Öffnet tabby
+  # Description of shortcut to open HelloTabs
+  shortcutOpen: Öffnet HelloTabs

@@ -32,7 +32,7 @@
   <p id="locale-description">
     <LocalizedWithLink
       id="preferences-language-contribute"
-      url="https://github.com/JulianGaibler/tabby#contribution-and-commits"
+      url="https://github.com/JulianaGaibler/hello-tabs#contribution-and-commits"
     />
   </p>
 </div>

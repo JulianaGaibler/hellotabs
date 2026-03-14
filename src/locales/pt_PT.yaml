@@ -1,4 +1,4 @@
-# European Portuguese translation for tabby
+# European Portuguese translation for HelloTabs
 # Fields marked with (catpun) can have a subtle cat-based pun if paw-sible. Don't force it though!
 
 # This is for the main search input.
@@ -19,11 +19,13 @@ preferences-button: Preferências
 back-button: Voltar
 
 # Other buttons
-pin-tab-button: fixar separador
-unpin-tab-button: desafixar separador
-close-tab-button: fechar separador
-mute-tab-button: silenciar separador
-unmute-tab-button: ativar som do separador
+pin-tab-button: Fixar separador
+unpin-tab-button: Desafixar separador
+close-tab-button: Fechar separador
+close-tabs-above: Fechar separadores acima
+close-tabs-below: Fechar separadores abaixo
+mute-tab-button: Silenciar separador
+unmute-tab-button: Ativar som do separador
 
 # Tab management
 close-duplicate-tabs: Fechar separadores duplicados
@@ -60,7 +62,7 @@ preferences-language-headline: Idioma
 # url will be inserted into message where {0} is.
 # url is a link to the git repository
 preferences-language-contribute:
-  message: '{0} o tabby para mais idiomas.'
+  message: '{0} o HelloTabs para mais idiomas.'
   url: Ajude a traduzir
 
 # Theme settings
@@ -69,7 +71,7 @@ preferences-theme-explanation: "'Automático' usa o tema com base no sistema ope
 
 # Overview settings
 preferences-show-overview-headline: Mostrar visão geral das separadores
-preferences-show-overview-explanation: Exibe todos os separadores abertos ao abrir o tabby
+preferences-show-overview-explanation: Exibe todos os separadores abertos ao abrir o HelloTabs
 
 # Search all windows settings
 preferences-search-all-windows-headline: Pesquisar em todas as janelas
@@ -84,7 +86,7 @@ preferences-show-tab-containers-headline: Mostrar separadores de contêiner
 preferences-show-tab-containers-explanation: Mostra a que contêiner um separador pertence
 
 # Asking for Recommendation
-preferences-recommend-headline: Gostou do tabby?
+preferences-recommend-headline: Gostou do HelloTabs?
 preferences-recommend-explanation: Partilhe com os seus amigos ou avalie!
 preferences-recommend-action: Avaliar extensão
 
@@ -120,8 +122,8 @@ url-changing-shortcuts-firefox: https://support.mozilla.org/pt-PT/kb/gerir-os-at
 # These translations are for the manifest.json file
 manifest:
   # Name of the extension
-  name: tabby - troca rápida de separadores
+  name: HelloTabs - troca rápida de separadores
   # Short description of the extension
   description: Extensão para pesquisar e trocar entre separadores em segundos com um simples atalho
-  # Description of shortcut to open tabby
-  shortcutOpen: Abrir o tabby
+  # Description of shortcut to open HelloTabs
+  shortcutOpen: Abrir o HelloTabs

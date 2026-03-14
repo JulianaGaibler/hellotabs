@@ -26,14 +26,14 @@ async function ensureOffscreen(): Promise<void> {
 function updateIcon(darkMode: boolean): void {
   const icons = darkMode
     ? {
-        16: '/icons/tabby_icon_eye_dark_16.png',
-        48: '/icons/tabby_icon_eye_dark_48.png',
-        128: '/icons/tabby_icon_eye_dark_128.png',
+        16: '/icons/hellotabs_icon_eye_dark_16.png',
+        48: '/icons/hellotabs_icon_eye_dark_48.png',
+        128: '/icons/hellotabs_icon_eye_dark_128.png',
       }
     : {
-        16: '/icons/tabby_icon_eye_light_16.png',
-        48: '/icons/tabby_icon_eye_light_48.png',
-        128: '/icons/tabby_icon_eye_light_128.png',
+        16: '/icons/hellotabs_icon_eye_light_16.png',
+        48: '/icons/hellotabs_icon_eye_light_48.png',
+        128: '/icons/hellotabs_icon_eye_light_128.png',
       }
 
   chrome.action.setIcon({ path: icons })

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from 'svelte-i18n'
   import Button from 'tint/components/Button.svelte'
-  import TabbyIcon from '@src/assets/icon.svg?raw'
+  import HelloTabsIcon from '@src/assets/icon.svg?raw'
   import iconAudio from 'tint/icons/20-volume-off.svg?raw'
   import iconAudioOff from 'tint/icons/20-volume-up.svg?raw'
   import iconPin from 'tint/icons/20-push-pin.svg?raw'
@@ -22,6 +22,7 @@
     claimFocus: boolean
     onactionat?: (index: number) => void
     onfocusset?: (index: number) => void
+    oncontextmenu?: (e: Event) => void
     focusLeft?: () => void
     focusRight?: () => void
   }
@@ -33,6 +34,7 @@
     claimFocus,
     onactionat = undefined,
     onfocusset = undefined,
+    oncontextmenu = undefined,
     focusLeft = $bindable(undefined),
     focusRight = $bindable(undefined),
   }: Props = $props()
@@ -174,6 +176,7 @@
     tabindex={isFocused(focus, 0) ? 0 : -1}
     onclick={openTab}
     onkeydown={(e) => runIfEnter(e, openTab)}
+    oncontextmenu={oncontextmenu}
   >
     <div
       class="favicon"
@@ -184,7 +187,7 @@
       {#if tab.favIconUrl}
         <img src={tab.favIconUrl} alt="" />
       {:else}
-        <span>{@html TabbyIcon}</span>
+        <span>{@html HelloTabsIcon}</span>
       {/if}
     </div>
     <div class="text">

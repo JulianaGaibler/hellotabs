@@ -93,6 +93,8 @@ const allActions: (MenuItem | boolean)[] = [
 
 export const tabActions = allActions.filter(Boolean) as MenuItem[]
 
+export { closeTabsAbove, closeTabsBelow }
+
 // Close tabs older than X minutes
 async function closeOlderThan(minutes: number) {
   const now = Date.now()
@@ -196,6 +198,38 @@ async function groupTabsBy(groupFn: (tab: CombinedTab) => string) {
         groupId: groupId,
       })
     }
+  }
+}
+
+async function closeTabsAbove(currentTabId: number) {
+  const tabs = await queryTabs({ currentWindow: true })
+  const currentTabIndex = tabs.findIndex(tab => tab.id === currentTabId)
+
+  if (currentTabIndex <= 0) return // No tabs above or tab not found
+
+  const tabsToClose = tabs
+    .slice(0, currentTabIndex)
+    .filter(tab => !tab.pinned && tab.id !== undefined)
+    .map(tab => tab.id!)
+
+  if (tabsToClose.length > 0) {
+    await thisBrowser?.tabs.remove(tabsToClose)
+  }
+}
+
+async function closeTabsBelow(currentTabId: number) {
+  const tabs = await queryTabs({ currentWindow: true })
+  const currentTabIndex = tabs.findIndex(tab => tab.id === currentTabId)
+
+  if (currentTabIndex === -1 || currentTabIndex >= tabs.length - 1) return // Tab not found or no tabs below
+
+  const tabsToClose = tabs
+    .slice(currentTabIndex + 1)
+    .filter(tab => !tab.pinned && tab.id !== undefined)
+    .map(tab => tab.id!)
+
+  if (tabsToClose.length > 0) {
+    await thisBrowser?.tabs.remove(tabsToClose)
   }
 }
 

@@ -15,9 +15,9 @@
     "url": "https://juliana.me"
   },
   "icons": {
-    "16": "tabby_icon_16.png",
-    "48": "tabby_icon_48.png",
-    "128": "tabby_icon_128.png"
+    "16": "hellotabs_icon_16.png",
+    "48": "hellotabs_icon_48.png",
+    "128": "hellotabs_icon_128.png"
   },
   "permissions": [
     "storage",
@@ -30,22 +30,22 @@
     "service_worker": "service-worker.js"
   },
   "action": {
-    "default_title": "tabby",
+    "default_title": "HelloTabs",
     "default_popup": "index.html",
     "theme_icons": [
       {
-        "dark": "/icons/tabby_icon_eye_light_16.png",
-        "light": "/icons/tabby_icon_eye_dark_16.png",
+        "dark": "/icons/hellotabs_icon_eye_light_16.png",
+        "light": "/icons/hellotabs_icon_eye_dark_16.png",
         "size": 16
       },
       {
-        "dark": "/icons/tabby_icon_eye_light_48.png",
-        "light": "/icons/tabby_icon_eye_dark_48.png",
+        "dark": "/icons/hellotabs_icon_eye_light_48.png",
+        "light": "/icons/hellotabs_icon_eye_dark_48.png",
         "size": 48
       },
       {
-        "dark": "/icons/tabby_icon_eye_light_128.png",
-        "light": "/icons/tabby_icon_eye_dark_128.png",
+        "dark": "/icons/hellotabs_icon_eye_light_128.png",
+        "light": "/icons/hellotabs_icon_eye_dark_128.png",
         "size": 128
       }
     ]

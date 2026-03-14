@@ -1,15 +1,15 @@
 ## Introduction
 
-tabby is a browser extension to help you switch between tabs in a breeze.
+HelloTabs is a browser extension to help you switch between tabs in a breeze.
 
 ## Setup and Configuration
 
 Since this is an extension that uses extension browser APIs a lot of features won't work in dev-mode.
 
-To install dependencies, run and build tabby, you need node and npm. When you have done this, you can navigate into the directory and install the dependencies.
+To install dependencies, run and build HelloTabs, you need node and npm. When you have done this, you can navigate into the directory and install the dependencies.
 
 ```bash
-cd path/to/tabby
+cd path/to/hello-tabs
 npm install
 ```
 
@@ -22,16 +22,16 @@ After that, the unpacked extension will be in the `dist/` directory, ready to be
 
 ### Language contributions
 
-If you want to help with translating tabby into more languages, follow these steps:
+If you want to help with translating HelloTabs into more languages, follow these steps:
 
 1. Clone the repository
-2. Copy the [English language file](https://github.com/JulianGaibler/tabby/blob/master/src/locales/en.yaml).
+2. Copy the [English language file](https://github.com/JulianaGaibler/hello-tabs/blob/master/src/locales/en.yaml).
 3. Rename the file to match the locale you are translating to (mind the note below).
 4. Translate the strings (If they don't start with a letter you have to wrap them in `"` quotes).
-5. Add the name of the language (in english) to the [English language file](/JulianGaibler/tabby/blob/master/src/locales/en.yaml).
+5. Add the name of the language (in english) to the [English language file](/JulianaGaibler/hello-tabs/blob/master/src/locales/en.yaml).
 6. Make a pull request
 
-You can also reach out on [Mastodon](https://mastodon.social/@JulianGaibler) or [Bluesky](https://bsky.app/profile/juliangaibler.bsky.social) if you have trouble with that or questions.
+You can also reach out on [Mastodon](https://mastodon.social/@JulianaGaibler) or [Bluesky](https://bsky.app/profile/juliangaibler.bsky.social) if you have trouble with that or questions.
 
 **Note:** The Chrome Web Store has a list of accepted [locale strings](https://developer.chrome.com/webstore/i18n#localeTable). If the language you translated to matches one of these, please use the corresponding locale code.
 

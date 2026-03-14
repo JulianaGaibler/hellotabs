@@ -2,7 +2,8 @@ import { thisBrowser, storageGet, storageSet } from './extension-api'
 import { writable } from 'svelte/store'
 import { locale } from 'svelte-i18n'
 
-export const PREFS_KEY = 'tabby_preferences'
+export const PREFS_KEY = 'hello_tabs_preferences'
+const OLD_PREFS_KEY = 'tabby_preferences'
 const CURRENT_VERSION = __VERSION__
 
 interface Preferences {
@@ -15,7 +16,7 @@ interface Preferences {
   searchAllWindows: boolean
 }
 
-interface TabbyState {
+interface HelloTabsState {
   runningAction: boolean
   error: string | null
   preferences?: Preferences
@@ -31,14 +32,14 @@ const defaultPreferences: Preferences = {
   searchAllWindows: false,
 }
 
-const defaultState: TabbyState = {
+const defaultState: HelloTabsState = {
   runningAction: false,
   error: null,
   preferences: undefined,
 }
 
 function state() {
-  const { subscribe, set, update } = writable<TabbyState>(
+  const { subscribe, set, update } = writable<HelloTabsState>(
     defaultState,
     (_, update) => {
       initPreferences().then((preferences) => {
@@ -129,6 +130,15 @@ async function initPreferences() {
 
   // if we have preferences, return them
   if (preferences) return preferences
+
+  // migrate from old storage key
+  const oldPreferences = (await storageGet(OLD_PREFS_KEY)) as Preferences | undefined
+  if (oldPreferences) {
+    await storageSet(PREFS_KEY, oldPreferences)
+    await thisBrowser?.storage.sync.remove(OLD_PREFS_KEY)
+    return oldPreferences
+  }
+
   let newPrefs: Preferences | undefined
   if (await storageGet('usedBefore')) {
     newPrefs = {

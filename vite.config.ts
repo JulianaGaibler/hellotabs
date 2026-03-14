@@ -1,8 +1,12 @@
+import { createRequire } from 'module'
+import path from 'path'
 import yamlPlugin from '@rollup/plugin-yaml'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import fs from 'fs'
 import { defineConfig } from 'vite'
 import yaml from 'yaml'
+
+const require = createRequire(import.meta.url)
 
 const LOCALES_PATH = 'src/locales/'
 
@@ -20,7 +24,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '~tint': '/node_modules/tint/dist',
+      '~tint': path.dirname(require.resolve('tint')),
       '@src': '/src',
     },
   },

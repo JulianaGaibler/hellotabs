@@ -2,11 +2,12 @@
   import { _ } from 'svelte-i18n'
   import Button from 'tint/components/Button.svelte'
   import Menu, {
+  MENU_SEPARATOR,
     type ContextClickHandler,
     type MenuItem,
   } from 'tint/components/Menu.svelte'
-  import TabbyIcon from '@src/assets/tabby-icon.svg?raw'
-  import TabbyNoResult from '@src/assets/cat_noresults.svg?raw'
+  import HelloTabsIcon from '@src/assets/hellotabs-icon.svg?raw'
+  import HelloTabsNoResult from '@src/assets/cat_noresults.svg?raw'
   import iconDropdown from 'tint/icons/14-dropdown.svg?raw'
   import TabItem from '@src/components/TabItem.svelte'
   import tabs from '@src/utils/tab-store'
@@ -17,7 +18,7 @@
   import tabGroups from '@src/utils/group-store'
   import stateStore from '@src/utils/state-store'
   import GroupItem from './components/GroupItem.svelte'
-  import { tabActions } from './utils/tab-actions'
+  import { tabActions, closeTabsAbove, closeTabsBelow } from './utils/tab-actions'
   import { onMount, untrack } from 'svelte'
 
   const INDEX_OPTIONS = { keys: ['title', 'url'], includeMatches: true }
@@ -36,8 +37,10 @@
   let focus: [number, number] = $state([-1, 0])
   let searchFieldFocus = $state(true)
   let searchField: HTMLInputElement | null = $state(null)
-  let focusLeftFns: Record<string, () => void> = {}
-  let focusRightFns: Record<string, () => void> = {}
+  let focusLeftFns = $state<Record<string, () => void>>({})
+  let focusRightFns = $state<Record<string, () => void>>({})
+  let contextClickHandlers = $state<ContextClickHandler | undefined>(undefined)
+  let contextMenuItems = $state<MenuItem[]>([])
   let searchResults = $state<HighlightResult<extAPI.CombinedTab>[]>([])
   let groupResults = $state<
     ReturnType<typeof findGroups<HighlightResult<extAPI.CombinedTab>>>
@@ -129,8 +132,8 @@
           ...item,
           label: $_(item.label),
         }
-        if ('items' in item) {
-          obj.items = item.items.map((subItem) => {
+        if ('items' in item && item.items) {
+          (obj as Extract<MenuItem, { items: MenuItem[] }>).items = item.items.map((subItem) => {
             if (typeof subItem === 'object' && 'label' in subItem) {
               return {
                 ...subItem,
@@ -167,6 +170,22 @@
       e.preventDefault()
       searchFieldFocus = false
       focusRightFns[searchResults[focus[0]].id || '_']?.()
+    } else if (e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey) || (e.key === 'm' && (e.ctrlKey || e.metaKey))) {
+      e.preventDefault()
+      if (!searchFieldFocus && focus[0] >= 0 && searchResults[focus[0]]) {
+        const focusedTab = searchResults[focus[0]]
+        const contextHandler = handleContextMenu(focusedTab)
+
+        // Create a synthetic mouse event with coordinates for the context menu
+        const syntheticEvent = new MouseEvent('contextmenu', {
+          bubbles: true,
+          cancelable: true,
+          clientX: 20, // Center of window
+          clientY: 20, // Center of window
+        })
+
+        contextHandler(syntheticEvent)
+      }
     } else if (e.key === 'Backspace' && searchString.trim().length > 0) {
       searchField?.focus()
     } else if (
@@ -210,6 +229,66 @@
       changeFocus(0)
     }
   }
+
+  function createContextMenu(tab: HighlightResult<extAPI.CombinedTab>): MenuItem[] {
+    // Find current tab index in the original tabs array
+    const currentTabIndex = $tabs.findIndex(t => t.id === tab.id)
+
+    // Find tabs above and below (excluding pinned tabs)
+    const tabsAbove = currentTabIndex > 0 ? $tabs.slice(0, currentTabIndex).filter(t => !t.pinned) : []
+    const tabsBelow = currentTabIndex >= 0 && currentTabIndex < $tabs.length - 1
+      ? $tabs.slice(currentTabIndex + 1).filter(t => !t.pinned)
+      : []
+
+    // Check if current tab is pinned
+    const isCurrentTabPinned = tab.pinned
+
+    return [
+      {
+        label: tab.pinned ? $_('unpin-tab-button') : $_('pin-tab-button'),
+        onClick: () => {
+          if (tab.id) {
+            extAPI.updateTabs(tab.id, { pinned: !tab.pinned })
+          }
+        }
+      },
+      MENU_SEPARATOR, // separator
+      {
+        label: $_('close-tabs-above'),
+        disabled: isCurrentTabPinned || tabsAbove.length === 0,
+        onClick: () => {
+          if (tab.id) {
+            closeTabsAbove(tab.id)
+          }
+        }
+      },
+      {
+        label: $_('close-tabs-below'),
+        disabled: isCurrentTabPinned || tabsBelow.length === 0,
+        onClick: () => {
+          if (tab.id) {
+            closeTabsBelow(tab.id)
+          }
+        }
+      },
+      MENU_SEPARATOR, // separator
+      {
+        label: $_('close-tab-button'),
+        onClick: () => {
+          if (tab.id) {
+            extAPI.closeTab(tab.id)
+          }
+        }
+      }
+    ]
+  }
+
+  function handleContextMenu(tab: HighlightResult<extAPI.CombinedTab>) {
+    return (e: Event) => {
+      contextMenuItems = createContextMenu(tab)
+      contextClickHandlers?.(e)
+    }
+  }
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -219,7 +298,7 @@
     icon={true}
     variant="ghost"
     title={$_('preferences-button')}
-    onclick={ontogglepreferences}>{@html TabbyIcon}</Button
+    onclick={ontogglepreferences}>{@html HelloTabsIcon}</Button
   >
   <input
     type="search"
@@ -245,10 +324,16 @@
   <Menu variant="button" items={localizedTabActions} bind:contextClick />
 </header>
 
+<Menu
+  bind:contextClick={contextClickHandlers}
+  variant="context"
+  items={contextMenuItems}
+/>
+
 <!-- if search term and no results -->
 {#if searchString.trim().length > 0 && searchResults.length === 0}
   <div class="no-result tint--tinted">
-    {@html TabbyNoResult}
+    {@html HelloTabsNoResult}
     <h2 class="tint--type-title-sans-3">{$_('search-no-result')}</h2>
   </div>
 {:else}
@@ -286,6 +371,7 @@
                   changeFocus(0)
                 }
               }}
+              oncontextmenu={handleContextMenu(searchResults[tabInfo.tabIndex])}
               claimFocus={!searchFieldFocus}
             />
           {/each}

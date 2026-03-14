@@ -66,9 +66,9 @@
 </main>
 
 <footer class="infobar tint--tinted tint--type-ui-small">
-  <p>tabby {VERSION}</p>
+  <p>HelloTabs {VERSION}</p>
   <a
-    href="https://github.com/JulianGaibler/tabby"
+    href="https://github.com/JulianaGaibler/hello-tabs"
     target="_blank"
     rel="noopener">{$_('source-code')}</a
   >

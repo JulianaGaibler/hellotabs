@@ -1,4 +1,4 @@
-# Brazilian Portuguese translation for tabby
+# Brazilian Portuguese translation for HelloTabs
 # Fields marked with (catpun) can have a subtle cat-based pun if paw-sible. Don't force it though!
 
 # This is for the main search input.
@@ -19,11 +19,13 @@ preferences-button: Preferências
 back-button: Voltar
 
 # Other buttons
-pin-tab-button: fixar aba
-unpin-tab-button: desafixar aba
-close-tab-button: fechar aba
-mute-tab-button: silenciar aba
-unmute-tab-button: ativar som da aba
+pin-tab-button: Fixar aba
+unpin-tab-button: Desafixar aba
+close-tab-button: Fechar aba
+close-tabs-above: Fechar abas acima
+close-tabs-below: Fechar abas abaixo
+mute-tab-button: Silenciar aba
+unmute-tab-button: Ativar som da aba
 
 # Tab management
 close-duplicate-tabs: Fechar abas duplicadas
@@ -60,7 +62,7 @@ preferences-language-headline: Idioma
 # url will be inserted into message where {0} is.
 # url is a link to the git repository
 preferences-language-contribute:
-  message: '{0} o tabby em mais idiomas.'
+  message: '{0} o HelloTabs em mais idiomas.'
   url: Ajude a traduzir
 
 # Theme settings
@@ -69,7 +71,7 @@ preferences-theme-explanation: "'Automático' usa o tema com base no seu sistema
 
 # Overview settings
 preferences-show-overview-headline: Mostrar visão geral das abas
-preferences-show-overview-explanation: Exibe todas as abas abertas ao abrir o tabby
+preferences-show-overview-explanation: Exibe todas as abas abertas ao abrir o HelloTabs
 
 preferences-search-all-windows-headline: Pesquisar em todas as janelas
 preferences-search-all-windows-explanation: Em vez de pesquisar apenas na janela atual, pesquise em todas as janelas
@@ -83,7 +85,7 @@ preferences-show-tab-containers-headline: Mostrar abas de contêiner
 preferences-show-tab-containers-explanation: Mostra a qual contêiner uma aba pertence
 
 # Asking for Recommendation
-preferences-recommend-headline: Gostou do tabby?
+preferences-recommend-headline: Gostou do HelloTabs?
 preferences-recommend-explanation: Compartilhe com seus amigos ou avalie!
 preferences-recommend-action: Avaliar extensão
 
@@ -119,8 +121,8 @@ url-changing-shortcuts-firefox: https://support.mozilla.org/pt-BR/kb/gerencie-at
 # These translations are for the manifest.json file
 manifest:
   # Name of the extension
-  name: tabby - troca rápida de abas
+  name: HelloTabs - troca rápida de abas
   # Short description of the extension
   description: Extensão para pesquisar e trocar em abas em segundos com um simples atalho
-  # Description of shortcut to open tabby
-  shortcutOpen: Abrir o tabby
+  # Description of shortcut to open HelloTabs
+  shortcutOpen: Abrir o HelloTabs
