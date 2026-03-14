@@ -11,50 +11,59 @@ const require = createRequire(import.meta.url)
 const LOCALES_PATH = 'src/locales/'
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    pluginManifest(),
-    availableLocales(),
-    localeFiles(),
-    yamlPlugin(),
-    svelte(),
-  ],
-  define: {
-    __VERSION__: JSON.stringify(process.env.npm_package_version),
-  },
-  resolve: {
-    alias: {
-      '~tint': path.dirname(require.resolve('tint')),
-      '@src': '/src',
+export default defineConfig(({ mode }) => {
+  const engine = mode === 'firefox' ? 'firefox' : 'chrome'
+
+  const input: Record<string, string> = {
+    main: 'index.html',
+    'service-worker': 'src/scripts/service-worker.ts',
+  }
+  if (engine === 'chrome') {
+    input.offscreen = 'offscreen.html'
+  }
+
+  return {
+    plugins: [
+      pluginManifest(engine),
+      availableLocales(),
+      localeFiles(),
+      yamlPlugin(),
+      svelte(),
+    ],
+    define: {
+      __VERSION__: JSON.stringify(process.env.npm_package_version),
+      __FIREFOX__: JSON.stringify(engine === 'firefox'),
     },
-  },
-  css: {
-    preprocessorOptions: {
-      sass: {
-        additionalData: (d) => {
-          const prepend = `@use "@src/styles/utils.sass" as tint\n`
-          const match = d.match(/^\s*/)
-          const spaces = match ? match[0] : ''
-          return `${spaces}${prepend}\n${d}`
+    resolve: {
+      alias: {
+        '~tint': path.dirname(require.resolve('tint')),
+        '@src': '/src',
+      },
+    },
+    css: {
+      preprocessorOptions: {
+        sass: {
+          additionalData: (d) => {
+            const prepend = `@use "@src/styles/utils.sass" as tint\n`
+            const match = d.match(/^\s*/)
+            const spaces = match ? match[0] : ''
+            return `${spaces}${prepend}\n${d}`
+          },
         },
       },
     },
-  },
-  build: {
-    minify: false,
-    rollupOptions: {
-      input: {
-        main: 'index.html',
-        offscreen: 'offscreen.html',
-        'service-worker': 'src/scripts/service-worker.ts',
-      },
-      output: {
-        entryFileNames: `[name].js`,
-        chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`,
+    build: {
+      minify: false,
+      rollupOptions: {
+        input,
+        output: {
+          entryFileNames: `[name].js`,
+          chunkFileNames: `assets/[name].js`,
+          assetFileNames: `assets/[name].[ext]`,
+        },
       },
     },
-  },
+  }
 })
 
 /**
@@ -62,7 +71,7 @@ export default defineConfig({
  * adds experimental mappings from the config file and then emits it into
  * dist/.
  */
-function pluginManifest() {
+function pluginManifest(engine: string) {
   return {
     name: 'copy-extension-manifest',
     async buildStart() {
@@ -75,6 +84,18 @@ function pluginManifest() {
       const manifest = JSON.parse(fs.readFileSync('src/manifest.json', 'utf-8'))
 
       manifest.version = packageJson.version
+
+      if (engine === 'chrome') {
+        delete manifest.browser_specific_settings
+        manifest.permissions = manifest.permissions.filter(
+          (p: string) => p !== 'contextualIdentities',
+        )
+      } else {
+        manifest.background = { scripts: ['service-worker.js'] }
+        manifest.permissions = manifest.permissions.filter(
+          (p: string) => p !== 'offscreen',
+        )
+      }
 
       this.emitFile({
         type: 'asset',

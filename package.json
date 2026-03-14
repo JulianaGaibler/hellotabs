@@ -4,8 +4,10 @@
   "version": "2.1.0",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
-    "build:watch": "vite build --watch",
+    "build:chrome": "vite build --mode chrome",
+    "build:firefox": "vite build --mode firefox",
+    "build:chrome:watch": "vite build --watch --mode chrome",
+    "build:firefox:watch": "vite build --watch --mode firefox",
     "preview": "vite preview",
     "package": "svelte-package && publint",
     "prepublishOnly": "npm run package",

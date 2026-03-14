@@ -9,6 +9,7 @@ declare module '*?raw' {
 }
 
 declare const __VERSION__: string
+declare const __FIREFOX__: boolean
 
 declare module 'virtual:available-locales' {
   export const availableLocales: string[]
