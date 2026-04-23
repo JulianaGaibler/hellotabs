@@ -1,13 +1,11 @@
-import {
-  hasTabGroupSupport,
-  queryTabGroups,
-  thisBrowser,
-} from './extension-api'
+import { queryTabGroups, thisBrowser } from './extension-api'
 import { readable } from 'svelte/store'
 
-export type TabGroupMap = { [key: number]: chrome.tabGroups.TabGroup }
+export type TabGroupMap = {
+  [key: number]: Omit<chrome.tabGroups.TabGroup, 'shared'>
+}
 
-const tabGroups = readable({} as TabGroupMap, (set, update) => {
+const tabGroups = readable({} as TabGroupMap, (set) => {
   const updateTabs = () => {
     queryTabGroups({
       windowId: window?.chrome?.windows?.WINDOW_ID_CURRENT,

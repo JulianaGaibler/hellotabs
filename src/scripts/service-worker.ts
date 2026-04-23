@@ -1,9 +1,3 @@
-const thisBrowser = (() => {
-  if (typeof browser !== 'undefined') return browser
-  else if (typeof chrome !== 'undefined') return chrome
-  else return undefined
-})()
-
 // Update the icon based on the received theme
 function updateIcon(darkMode: boolean): void {
   const icons = darkMode
@@ -30,12 +24,17 @@ if (!__FIREFOX__) {
     }
 
     if (creating === null) {
-      await chrome.offscreen.createDocument({
-        url: 'offscreen.html',
-        reasons: ['MATCH_MEDIA' as any],
-        justification:
-          'Access window object for light/dark theme media query',
-      })
+      creating = chrome.offscreen
+        .createDocument({
+          url: 'offscreen.html',
+          reasons: ['MATCH_MEDIA' as chrome.offscreen.Reason],
+          justification:
+            'Access window object for light/dark theme media query',
+        })
+        .catch((err) => {
+          creating = null
+          throw err
+        })
     }
     await creating
     creating = null
@@ -43,7 +42,6 @@ if (!__FIREFOX__) {
 
   // Listen for messages from the offscreen document
   chrome.runtime.onMessage.addListener((message) => {
-    console.log('Received message', message)
     if (message.type === 'themeChange') {
       updateIcon(message.darkMode)
     }

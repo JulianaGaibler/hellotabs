@@ -3,8 +3,8 @@
   import { _ } from 'svelte-i18n'
   import Toggleable from 'tint/components/Toggleable.svelte'
 
-  function handleChange(s: boolean) {
-    stateStore.setPreferences('searchAllWindows', s)
+  function handleChange({ checked }: { checked: boolean }) {
+    stateStore.setPreferences('searchAllWindows', checked)
   }
 </script>
 
@@ -20,7 +20,7 @@
   <Toggleable
     checked={!!$stateStore.preferences?.searchAllWindows}
     onchange={handleChange}
-    ariaDescribedby="all-windows-description"
+    aria-describedby="all-windows-description"
     id="input"
     type="switch"
   />

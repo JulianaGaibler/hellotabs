@@ -1,5 +1,5 @@
 declare module '*.yaml' {
-  const value: any
+  const value: Record<string, string | Record<string, string>>
   export default value
 }
 

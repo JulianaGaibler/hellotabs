@@ -44,7 +44,7 @@
   }
 
   function toggleCollapsed() {
-    groupId && extAPI.updateGroup(groupId, { collapsed: !collapsed })
+    if (groupId) extAPI.updateGroup(groupId, { collapsed: !collapsed })
     onactionat?.(nth)
   }
   $effect(() => {

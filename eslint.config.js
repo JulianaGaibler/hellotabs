@@ -6,6 +6,9 @@ import svelteConfig from './svelte.config.js'
 import globals from 'globals'
 
 export default ts.config(
+  {
+    ignores: ['dist/', '.svelte-kit/', 'node_modules/', '.*.cjs'],
+  },
   // js
   js.configs.recommended,
   // ts

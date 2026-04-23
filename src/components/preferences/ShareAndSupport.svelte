@@ -13,7 +13,7 @@
     }
   }
 
-  const SUPPORT_LINK = 'https://juliana.me/hello-tabs#support'
+  const SUPPORT_LINK = 'https://juliana.me/projects/hellotabs#support'
   const STORE_LINK = getStoreLink()
 </script>
 

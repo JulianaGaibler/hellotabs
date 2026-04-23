@@ -32,14 +32,14 @@
   <p id="locale-description">
     <LocalizedWithLink
       id="preferences-language-contribute"
-      url="https://github.com/JulianaGaibler/hello-tabs#contribution-and-commits"
+      url="https://github.com/JulianaGaibler/hellotabs#contribution-and-commits"
     />
   </p>
 </div>
 <div class="controls">
   <Select
     id="input"
-    ariaDescribedby="locale-description"
+    aria-describedby="locale-description"
     {items}
     label={$_('preferences-language-headline')}
     value={$stateStore.preferences?.locale}

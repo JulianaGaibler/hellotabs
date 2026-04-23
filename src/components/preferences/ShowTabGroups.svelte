@@ -3,8 +3,8 @@
   import { _ } from 'svelte-i18n'
   import Toggleable from 'tint/components/Toggleable.svelte'
 
-  function handleChange(s: boolean) {
-    stateStore.setPreferences('showGroupTabs', s)
+  function handleChange({ checked }: { checked: boolean }) {
+    stateStore.setPreferences('showGroupTabs', checked)
   }
 </script>
 
@@ -20,7 +20,7 @@
   <Toggleable
     checked={!!$stateStore.preferences?.showGroupTabs}
     onchange={handleChange}
-    ariaDescribedby="overview-description"
+    aria-describedby="overview-description"
     id="input"
     type="switch"
   />

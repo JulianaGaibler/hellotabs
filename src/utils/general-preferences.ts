@@ -1,4 +1,4 @@
-import { storageGet, storageSet } from '@src/extensionApi'
+import { storageGet, storageSet } from '@src/utils/extension-api'
 
 export enum PREF {
   SHOW_OVERVIEW = 'show-overview',
@@ -27,7 +27,7 @@ export async function getPref(name: PREF) {
   }
 }
 
-export async function setPref(name: PREF, value: any) {
-  await storageSet({ [name]: value })
+export async function setPref(name: PREF, value: unknown) {
+  await storageSet(name, value)
   return value
 }

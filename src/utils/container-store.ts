@@ -1,15 +1,11 @@
-import {
-  hasContainerSupport,
-  queryContainers,
-  thisBrowser,
-} from './extension-api'
+import { queryContainers, thisBrowser } from './extension-api'
 import { readable } from 'svelte/store'
 
 export type ContainerMap = {
   [key: string]: browser.contextualIdentities.ContextualIdentity
 }
 
-const containers = readable({} as ContainerMap, (set, update) => {
+const containers = readable({} as ContainerMap, (set) => {
   const updateTabs = () => {
     queryContainers({}).then((containers) => {
       if (!containers) return

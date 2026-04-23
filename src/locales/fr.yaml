@@ -9,7 +9,7 @@ search-input:
   aria-label: Rechercher vos onglets
 
 # Label for button with which open tabs are managed
-search-tab-counter: 'Gérer {n, plural, =0 {les onglets} one {l''onglet ouvert} other {{n} onglets ouverts}}'
+search-tab-counter: "Gérer {n, plural, =0 {les onglets} one {l'onglet ouvert} other {{n} onglets ouverts}}"
 
 # (catpun) Text that appears if there are no search results
 search-no-result: Aucun onglet trouvé
@@ -81,7 +81,7 @@ preferences-language-headline: Langue
 # url will be inserted into message where {0} is.
 # url is a link to the git repository
 preferences-language-contribute:
-  message: '{0} HelloTabs dans d''autres langues.'
+  message: "{0} HelloTabs dans d'autres langues."
   url: Aidez à traduire
 
 # Theme settings

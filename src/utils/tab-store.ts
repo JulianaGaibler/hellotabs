@@ -18,6 +18,24 @@ const tabs = readable([] as CombinedTab[], (set) => {
     updateTabs()
   })
 
+  const onTabUpdated: Parameters<
+    (typeof thisBrowser & {})['tabs']['onUpdated']['addListener']
+  >[0] = (_tabId, changeInfo) => {
+    if (
+      changeInfo.title !== undefined ||
+      changeInfo.url !== undefined ||
+      changeInfo.pinned !== undefined ||
+      changeInfo.favIconUrl !== undefined ||
+      changeInfo.audible !== undefined ||
+      changeInfo.mutedInfo !== undefined ||
+      ('groupId' in changeInfo && changeInfo.groupId !== undefined) ||
+      changeInfo.discarded !== undefined ||
+      changeInfo.status === 'complete'
+    ) {
+      updateTabs()
+    }
+  }
+
   if (thisBrowser?.tabs) {
     thisBrowser.tabs.onAttached.addListener(updateTabs)
     thisBrowser.tabs.onCreated.addListener(updateTabs)
@@ -25,7 +43,7 @@ const tabs = readable([] as CombinedTab[], (set) => {
     thisBrowser.tabs.onMoved.addListener(updateTabs)
     thisBrowser.tabs.onRemoved.addListener(updateTabs)
     thisBrowser.tabs.onReplaced.addListener(updateTabs)
-    thisBrowser.tabs.onUpdated.addListener(updateTabs)
+    thisBrowser.tabs.onUpdated.addListener(onTabUpdated)
   }
   return () => {
     if (thisBrowser?.tabs) {
@@ -35,7 +53,7 @@ const tabs = readable([] as CombinedTab[], (set) => {
       thisBrowser.tabs.onMoved.removeListener(updateTabs)
       thisBrowser.tabs.onRemoved.removeListener(updateTabs)
       thisBrowser.tabs.onReplaced.removeListener(updateTabs)
-      thisBrowser.tabs.onUpdated.removeListener(updateTabs)
+      thisBrowser.tabs.onUpdated.removeListener(onTabUpdated)
     }
   }
 })

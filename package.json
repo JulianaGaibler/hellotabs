@@ -1,7 +1,7 @@
 {
-  "name": "hello-tabs",
+  "name": "hellotabs",
   "type": "module",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "scripts": {
     "dev": "vite dev",
     "build:chrome": "vite build --mode chrome",
@@ -14,15 +14,15 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "test": "vitest",
-    "lint": "prettier -c .eslintrc.cjs --check . && eslint .",
-    "prettier": "prettier -c .eslintrc.cjs --write ."
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "fuse.js": "^7.1.0",
     "he": "^1.2.0",
     "semver": "^7.7.4",
     "svelte-i18n": "^4.0.1",
-    "tint": "git://github.com/JulianGaibler/tint.git#main"
+    "tint": "https://github.com/JulianaGaibler/tint.git#main"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -44,7 +44,7 @@
     "prettier-plugin-svelte": "^3.5.1",
     "sass": "^1.98.0",
     "svelte": "^5.53.12",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.57.0",
     "vite": "^8.0.0",
     "web-ext": "^10.0.0",

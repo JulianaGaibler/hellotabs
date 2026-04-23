@@ -4,7 +4,6 @@ import {
   getLocaleFromNavigator,
   init,
   register,
-  locale,
 } from 'svelte-i18n'
 
 addMessages('en', en)
@@ -18,7 +17,6 @@ register('es-MX', () => import('@src/locales/es_MX.yaml'))
 
 function getLocale() {
   const system = getLocaleFromNavigator()
-  console.log('system locale:', system)
   if (!system) return 'en'
   // the system locale might return something like 'en-US' or 'de-DE' or 'pt-BR'
   // for german, french, english and spanish we want to return the language code only
@@ -36,4 +34,3 @@ init({
   fallbackLocale: 'en',
   initialLocale: getLocale(),
 })
-locale.set(getLocale())

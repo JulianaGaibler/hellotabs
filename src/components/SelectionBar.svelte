@@ -15,11 +15,7 @@
     deselectAll,
     exitEditMode,
   } from '@src/utils/selection-store'
-  import {
-    closeTabs,
-    pinTabs,
-    addTabsToGroup,
-  } from '@src/utils/tab-actions'
+  import { closeTabs, pinTabs, addTabsToGroup } from '@src/utils/tab-actions'
   import { hasTabGroupSupport, queryTabGroups } from '@src/utils/extension-api'
   import type { HighlightResult } from '@src/utils/fuse-highlight'
   import type { CombinedTab } from '@src/utils/extension-api'
@@ -33,18 +29,12 @@
   let selectedIds = $derived(Array.from($selectionStore.selected))
   let selectedCount = $derived($selectionStore.selected.size)
   let totalCount = $derived(searchResults.length)
-  let allSelected = $derived(
-    totalCount > 0 && selectedCount === totalCount,
-  )
-  let editMode = $derived($selectionStore.editMode)
-
+  let allSelected = $derived(totalCount > 0 && selectedCount === totalCount)
   // Check if all selected tabs are pinned
   let allSelectedPinned = $derived.by(() => {
     if (selectedIds.length === 0) return false
-    return selectedIds.every((id) => {
-      const tab = searchResults.find((t) => t.id === id)
-      return tab?.pinned
-    })
+    const tabMap = new Map(searchResults.map((t) => [t.id, t]))
+    return selectedIds.every((id) => tabMap.get(id)?.pinned)
   })
 
   function handleSelectAllToggle() {
@@ -152,9 +142,13 @@
         variant="ghost"
         small={true}
         title={$_('batch-add-to-group')}
-        onclick={handleGroupClick}
-      >{@html iconCollectionAdd}</Button>
-      <Menu variant="button" items={groupMenuItems} bind:contextClick={groupContextClick} />
+        onclick={handleGroupClick}>{@html iconCollectionAdd}</Button
+      >
+      <Menu
+        variant="button"
+        items={groupMenuItems}
+        bind:contextClick={groupContextClick}
+      />
     {/if}
     <Button
       bind:element={actionButtons[1]}
@@ -163,8 +157,8 @@
       small={true}
       title={allSelectedPinned ? $_('batch-unpin-tabs') : $_('batch-pin-tabs')}
       onclick={handlePin}
-      disabled={selectedCount === 0}
-    >{@html iconPin}</Button>
+      disabled={selectedCount === 0}>{@html iconPin}</Button
+    >
     <Button
       bind:element={actionButtons[2]}
       icon={true}
@@ -172,14 +166,14 @@
       small={true}
       title={$_('batch-close-tabs')}
       onclick={handleClose}
-      disabled={selectedCount === 0}
-    >{@html iconClose}</Button>
+      disabled={selectedCount === 0}>{@html iconClose}</Button
+    >
     <Button
       bind:element={actionButtons[3]}
       variant="ghost"
       small={true}
-      onclick={handleDone}
-    >{$_('exit-edit-mode')}</Button>
+      onclick={handleDone}>{$_('exit-edit-mode')}</Button
+    >
   </div>
 </div>
 

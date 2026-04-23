@@ -73,7 +73,7 @@ function state() {
     // get current preferences
     const preferences = (await storageGet(PREFS_KEY)) as Preferences | undefined
     if (!preferences) {
-      storageSet(PREFS_KEY, {
+      await storageSet(PREFS_KEY, {
         ...defaultPreferences,
         [key]: value,
       })
@@ -82,16 +82,23 @@ function state() {
     // update the preference
     preferences[key] = value
     // save the preferences
-    storageSet(PREFS_KEY, preferences)
+    await storageSet(PREFS_KEY, preferences)
   }
   function getPreference(
     key: keyof Preferences,
   ): Promise<Preferences[keyof Preferences]> {
     return new Promise<Preferences[keyof Preferences]>((resolve) => {
-      subscribe((state) => {
+      let unsubscribed = false
+      const unsubscribe = subscribe((state) => {
         if (!state.preferences) return
         resolve(state.preferences[key])
+        if (unsubscribe) {
+          unsubscribe()
+        } else {
+          unsubscribed = true
+        }
       })
+      if (unsubscribed) unsubscribe()
     })
   }
   function startAction() {
@@ -123,7 +130,8 @@ function state() {
   }
 }
 
-export default state()
+const stateStore = state()
+export default stateStore
 
 async function initPreferences() {
   const preferences = (await storageGet(PREFS_KEY)) as Preferences | undefined
@@ -132,7 +140,9 @@ async function initPreferences() {
   if (preferences) return preferences
 
   // migrate from old storage key
-  const oldPreferences = (await storageGet(OLD_PREFS_KEY)) as Preferences | undefined
+  const oldPreferences = (await storageGet(OLD_PREFS_KEY)) as
+    | Preferences
+    | undefined
   if (oldPreferences) {
     await storageSet(PREFS_KEY, oldPreferences)
     await thisBrowser?.storage.sync.remove(OLD_PREFS_KEY)
@@ -155,11 +165,11 @@ async function initPreferences() {
   } else {
     newPrefs = defaultPreferences
   }
-  storageSet(PREFS_KEY, newPrefs)
+  await storageSet(PREFS_KEY, newPrefs)
   return newPrefs
 }
 
-export async function listenToThemeChange() {
+export function listenToThemeChange() {
   const updateTheme = (theme: string) => {
     document.body.classList.remove('theme--light', 'theme--dark')
     if (theme === 'dark') {
@@ -169,14 +179,9 @@ export async function listenToThemeChange() {
     }
   }
 
-  const preferences = (await storageGet(PREFS_KEY)) as Preferences | undefined
-  if (preferences) {
-    updateTheme(preferences.theme)
-  }
-  thisBrowser?.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName !== 'sync') return
-    if (changes[PREFS_KEY]) {
-      updateTheme(changes[PREFS_KEY].newValue.theme)
+  stateStore.subscribe((state) => {
+    if (state.preferences) {
+      updateTheme(state.preferences.theme)
     }
   })
 }

@@ -32,7 +32,7 @@
 <div class="controls">
   <Select
     id="input"
-    ariaDescribedby="locale-description"
+    aria-describedby="locale-description"
     {items}
     label={$_('preferences-theme-headline')}
     value={$stateStore.preferences?.theme}

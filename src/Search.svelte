@@ -2,7 +2,7 @@
   import { _ } from 'svelte-i18n'
   import Button from 'tint/components/Button.svelte'
   import Menu, {
-  MENU_SEPARATOR,
+    MENU_SEPARATOR,
     type ContextClickHandler,
     type MenuItem,
   } from 'tint/components/Menu.svelte'
@@ -19,8 +19,13 @@
   import tabGroups from '@src/utils/group-store'
   import stateStore from '@src/utils/state-store'
   import GroupItem from './components/GroupItem.svelte'
-  import { tabActions, closeTabsAbove, closeTabsBelow, moveTabs } from './utils/tab-actions'
-  import { reorderable, type ReorderEventDetail } from 'tint'
+  import {
+    tabActions,
+    closeTabsAbove,
+    closeTabsBelow,
+    moveTabs,
+  } from './utils/tab-actions'
+  import { reorderable, type ReorderEventDetail } from 'tint/actions'
   import { onMount, untrack } from 'svelte'
   import {
     selectionStore,
@@ -42,6 +47,7 @@
 
   let searchString = $state('')
   let fuse: Fuse<extAPI.CombinedTab> | null = $state(null)
+  let lastFuseFingerprint = ''
 
   let contextClick: ContextClickHandler | undefined = $state(undefined)
 
@@ -68,19 +74,38 @@
 
   function handleReorder(detail: ReorderEventDetail) {
     if (isSearching) return
-    const draggedTabId = Number(detail.draggedElement.getAttribute('data-tab-id'))
+    const draggedTabId = Number(
+      detail.draggedElement.getAttribute('data-tab-id'),
+    )
     const targetTabId = Number(detail.targetElement.getAttribute('data-tab-id'))
     if (!draggedTabId || !targetTabId) return
     pendingFocusTabId = draggedTabId
-    moveTabs(draggedTabId, targetTabId, detail.position, $tabs, $selectionStore.selected)
+    moveTabs(
+      draggedTabId,
+      targetTabId,
+      detail.position,
+      $tabs,
+      $selectionStore.selected,
+    )
   }
 
-  function handleSelectionClick(tabId: number, event: MouseEvent | KeyboardEvent) {
-    if (event instanceof MouseEvent && event.shiftKey && $selectionStore.lastClickedIndex !== null) {
+  function handleSelectionClick(
+    tabId: number,
+    event: MouseEvent | KeyboardEvent,
+  ) {
+    if (
+      event instanceof MouseEvent &&
+      event.shiftKey &&
+      $selectionStore.lastClickedIndex !== null
+    ) {
       // Find index of current tab in searchResults
       const currentIndex = searchResults.findIndex((t) => t.id === tabId)
       if (currentIndex !== -1) {
-        selectRange($selectionStore.lastClickedIndex, currentIndex, searchResults)
+        selectRange(
+          $selectionStore.lastClickedIndex,
+          currentIndex,
+          searchResults,
+        )
       }
     } else {
       const currentIndex = searchResults.findIndex((t) => t.id === tabId)
@@ -89,6 +114,14 @@
   }
 
   function updateFuseInstance(tabs: extAPI.CombinedTab[]) {
+    const fingerprint = tabs
+      .map((t) => `${t.id}|${t.title}|${t.url}`)
+      .join('\n')
+    if (fingerprint === lastFuseFingerprint && fuse) {
+      fuse.setCollection(tabs)
+      return
+    }
+    lastFuseFingerprint = fingerprint
     const index = Fuse.createIndex(INDEX_OPTIONS.keys, tabs)
     if (!fuse) {
       fuse = new Fuse(tabs, INDEX_OPTIONS, index)
@@ -136,7 +169,6 @@
 
   $effect(() => {
     updateFuseInstance($tabs)
-    // stringify and parse fuse and log it
     if (
       searchString === undefined ||
       $tabs === undefined ||
@@ -183,12 +215,14 @@
   let localizedTabActions = $derived.by<MenuItem[]>(() => {
     return tabActions.map((item) => {
       if (typeof item === 'object' && 'label' in item) {
-        const obj: any = {
+        const obj: MenuItem = {
           ...item,
           label: $_(item.label),
         }
         if ('items' in item && item.items) {
-          (obj as Extract<MenuItem, { items: MenuItem[] }>).items = item.items.map((subItem) => {
+          ;(obj as Extract<MenuItem, { items: MenuItem[] }>).items = (
+            item as Extract<MenuItem, { items: MenuItem[] }>
+          ).items.map((subItem) => {
             if (typeof subItem === 'object' && 'label' in subItem) {
               return {
                 ...subItem,
@@ -210,26 +244,18 @@
 
   function handleKeydown(e: KeyboardEvent) {
     // Let Ctrl+Shift+Arrow propagate to reorderable action
-    if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && e.ctrlKey && e.shiftKey) {
+    if (
+      (e.key === 'ArrowDown' || e.key === 'ArrowUp') &&
+      e.ctrlKey &&
+      e.shiftKey
+    ) {
       return
     }
     if (e.key === 'ArrowDown') {
       e.preventDefault()
       searchFieldFocus = false
       if (e.shiftKey) {
-        // Add current tab to selection
-        const currentTab = getTabAtFocus(focus[0])
-        if (currentTab?.id !== undefined) {
-          addToSelection(currentTab.id, focus[0])
-        }
-        // Reset to main button if on action button
-        if (focus[1] > 0) focus = [focus[0], 0]
-        changeFocus(1)
-        // Add newly focused tab to selection
-        const newTab = getTabAtFocus(focus[0])
-        if (newTab?.id !== undefined) {
-          addToSelection(newTab.id, focus[0])
-        }
+        shiftArrowSelect(1)
       } else {
         changeFocus(1)
       }
@@ -237,19 +263,7 @@
       e.preventDefault()
       searchFieldFocus = false
       if (e.shiftKey) {
-        // Add current tab to selection
-        const currentTab = getTabAtFocus(focus[0])
-        if (currentTab?.id !== undefined) {
-          addToSelection(currentTab.id, focus[0])
-        }
-        // Reset to main button if on action button
-        if (focus[1] > 0) focus = [focus[0], 0]
-        changeFocus(-1)
-        // Add newly focused tab to selection
-        const newTab = getTabAtFocus(focus[0])
-        if (newTab?.id !== undefined) {
-          addToSelection(newTab.id, focus[0])
-        }
+        shiftArrowSelect(-1)
       } else {
         changeFocus(-1)
       }
@@ -263,8 +277,11 @@
       searchFieldFocus = false
       const key = getTabAtFocus(focus[0])?.id || '_'
       focusRightFns[key]?.()
-
-    } else if (e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey) || (e.key === 'm' && (e.ctrlKey || e.metaKey))) {
+    } else if (
+      e.key === 'ContextMenu' ||
+      (e.key === 'F10' && e.shiftKey) ||
+      (e.key === 'm' && (e.ctrlKey || e.metaKey))
+    ) {
       e.preventDefault()
       const focusedTab = getTabAtFocus(focus[0])
       if (!searchFieldFocus && focus[0] >= 0 && focusedTab) {
@@ -287,7 +304,12 @@
       } else if ($selectionStore.selected.size > 0) {
         deselectAll()
       }
-    } else if (e.key === ' ' && !searchFieldFocus && focus[0] >= 0 && focus[1] === 0) {
+    } else if (
+      e.key === ' ' &&
+      !searchFieldFocus &&
+      focus[0] >= 0 &&
+      focus[1] === 0
+    ) {
       e.preventDefault()
       const tab = getTabAtFocus(focus[0])
       if (tab?.id !== undefined) {
@@ -318,9 +340,17 @@
         extAPI.openTab(tabId)
       }
     } else {
-      focus[1] = 0
-      focus = focus
+      focus = [focus[0], 0]
     }
+  }
+
+  function shiftArrowSelect(direction: -1 | 1) {
+    const currentTab = getTabAtFocus(focus[0])
+    if (currentTab?.id !== undefined) addToSelection(currentTab.id, focus[0])
+    if (focus[1] > 0) focus = [focus[0], 0]
+    changeFocus(direction)
+    const newTab = getTabAtFocus(focus[0])
+    if (newTab?.id !== undefined) addToSelection(newTab.id, focus[0])
   }
 
   function changeFocus(diff: -1 | 0 | 1 = 0) {
@@ -341,15 +371,21 @@
     }
   }
 
-  function createContextMenu(tab: HighlightResult<extAPI.CombinedTab>): MenuItem[] {
+  function createContextMenu(
+    tab: HighlightResult<extAPI.CombinedTab>,
+  ): MenuItem[] {
     // Find current tab index in the original tabs array
-    const currentTabIndex = $tabs.findIndex(t => t.id === tab.id)
+    const currentTabIndex = $tabs.findIndex((t) => t.id === tab.id)
 
     // Find tabs above and below (excluding pinned tabs)
-    const tabsAbove = currentTabIndex > 0 ? $tabs.slice(0, currentTabIndex).filter(t => !t.pinned) : []
-    const tabsBelow = currentTabIndex >= 0 && currentTabIndex < $tabs.length - 1
-      ? $tabs.slice(currentTabIndex + 1).filter(t => !t.pinned)
-      : []
+    const tabsAbove =
+      currentTabIndex > 0
+        ? $tabs.slice(0, currentTabIndex).filter((t) => !t.pinned)
+        : []
+    const tabsBelow =
+      currentTabIndex >= 0 && currentTabIndex < $tabs.length - 1
+        ? $tabs.slice(currentTabIndex + 1).filter((t) => !t.pinned)
+        : []
 
     // Check if current tab is pinned
     const isCurrentTabPinned = tab.pinned
@@ -361,7 +397,7 @@
           if (tab.id) {
             extAPI.updateTabs(tab.id, { pinned: !tab.pinned })
           }
-        }
+        },
       },
       MENU_SEPARATOR, // separator
       {
@@ -371,7 +407,7 @@
           if (tab.id) {
             closeTabsAbove(tab.id)
           }
-        }
+        },
       },
       {
         label: $_('close-tabs-below'),
@@ -380,7 +416,7 @@
           if (tab.id) {
             closeTabsBelow(tab.id)
           }
-        }
+        },
       },
       MENU_SEPARATOR, // separator
       {
@@ -389,12 +425,14 @@
           if (tab.id) {
             extAPI.closeTab(tab.id)
           }
-        }
-      }
+        },
+      },
     ]
   }
 
-  function getTabAtFocus(focusIdx: number): HighlightResult<extAPI.CombinedTab> | undefined {
+  function getTabAtFocus(
+    focusIdx: number,
+  ): HighlightResult<extAPI.CombinedTab> | undefined {
     for (const item of groupResults.groupIndices) {
       if (item.type !== 'tabs') continue
       for (const tabInfo of item.items) {
@@ -439,7 +477,7 @@
     class="tabs"
     onclick={contextClick}
     onmousedown={contextClick}
-    title={$_('search-tab-counter', { values: { n: 12 } })}
+    title={$_('search-tab-counter', { values: { n: $tabs.length } })}
   >
     <span>{$tabs.length}</span>
     {@html iconDropdown}
@@ -464,7 +502,7 @@
     {#if hasSelection || editMode}
       <SelectionBar {searchResults} />
     {/if}
-    {#each groupResults.groupIndices as item}
+    {#each groupResults.groupIndices as item, i (i)}
       {#if item.type === 'group'}
         <GroupItem
           groupId={item.groupId}
@@ -496,7 +534,9 @@
               bind:focusRight={
                 focusRightFns[searchResults[tabInfo.tabIndex].id || '_']
               }
-              selected={$selectionStore.selected.has(searchResults[tabInfo.tabIndex].id ?? -1)}
+              selected={$selectionStore.selected.has(
+                searchResults[tabInfo.tabIndex].id ?? -1,
+              )}
               {editMode}
               onselect={handleSelectionClick}
               onactionat={handleFocusChange}

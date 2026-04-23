@@ -47,7 +47,7 @@
     focusRight = $bindable(undefined),
   }: Props = $props()
 
-  let buttons: (HTMLButtonElement | undefined)[] = $state([
+  let buttons: (HTMLElement | undefined)[] = $state([
     undefined,
     undefined,
     undefined,
@@ -55,10 +55,14 @@
     undefined,
   ])
 
-  let checkboxEl: HTMLInputElement | HTMLButtonElement | undefined = $state(undefined)
+  let checkboxEl: HTMLInputElement | HTMLButtonElement | undefined =
+    $state(undefined)
 
   $effect(() => {
     buttons[0] = editMode ? checkboxEl : undefined
+    if (checkboxEl) {
+      checkboxEl.tabIndex = editMode && isFocused(focus, 0) ? 0 : -1
+    }
   })
 
   onMount(() => {
@@ -145,7 +149,7 @@
       return
     }
     // Normal click: open tab
-    tab?.id && extAPI.openTab(tab.id)
+    if (tab?.id) extAPI.openTab(tab.id)
     onactionat?.(nth)
   }
 
@@ -156,7 +160,7 @@
       }
       return
     }
-    tab?.id && extAPI.openTab(tab.id)
+    if (tab?.id) extAPI.openTab(tab.id)
     onactionat?.(nth)
   }
 
@@ -166,29 +170,22 @@
     }
   }
   function togglePinTab() {
-    tab?.id && extAPI.updateTabs(tab.id, { pinned: !tab.pinned })
+    if (tab?.id) extAPI.updateTabs(tab.id, { pinned: !tab.pinned })
     onactionat?.(nth)
   }
   function toggleMuteTab() {
-    tab?.id &&
-      extAPI.updateTabs(tab.id, {
-        muted: !tab.mutedInfo?.muted ? true : false,
-      })
+    if (tab?.id) extAPI.updateTabs(tab.id, { muted: !tab.mutedInfo?.muted })
     onactionat?.(nth)
   }
   function closeTab() {
-    tab?.id && extAPI.closeTab(tab.id)
+    if (tab?.id) extAPI.closeTab(tab.id)
     onactionat?.(nth)
   }
 
-  function runIfEnter<T extends (...args: any[]) => any>(
-    e: KeyboardEvent,
-    fn: T,
-    ...args: Parameters<T>
-  ) {
+  function runIfEnter(e: KeyboardEvent, fn: () => void) {
     if (e.key === 'Enter') {
       e.preventDefault()
-      fn(...args)
+      fn()
     } else if (e.key === 'Home') {
       e.preventDefault()
       onfocusset?.(0)
@@ -205,7 +202,8 @@
 <li
   data-tab-id={tab.id}
   class:focus={focus[0] === nth}
-  class:focus-main={focus[0] === nth && (focus[1] === 1 || (!editMode && focus[1] === 0))}
+  class:focus-main={focus[0] === nth &&
+    (focus[1] === 1 || (!editMode && focus[1] === 0))}
   class:current={tab.active}
   class:selected
   class={`chromeGroupColor ${$tabGroups[tab.groupId]?.color || ''}`}
@@ -216,16 +214,18 @@
     </span>
   {/if}
   {#if editMode || selected}
-    <div class="checkbox-area">
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div
+      class="checkbox-area"
+      onkeydown={(e: KeyboardEvent) => runIfEnter(e, handleCheckboxChange)}
+    >
       <Toggleable
         bind:element={checkboxEl}
         id={`tab-checkbox-${tab.id}`}
         type="checkbox"
         checked={selected}
         onchange={handleCheckboxChange}
-        onkeydown={(e) => runIfEnter(e, handleCheckboxChange)}
         aria-label={$_('select-tab') + ' - ' + tab.title}
-        tabindex={editMode && isFocused(focus, 0) ? 0 : -1}
       />
     </div>
   {/if}
@@ -235,7 +235,7 @@
     tabindex={isFocused(focus, 1) ? 0 : -1}
     onclick={handleTabClick}
     onkeydown={(e) => runIfEnter(e, handleTabButtonEnter)}
-    oncontextmenu={oncontextmenu}
+    {oncontextmenu}
     aria-pressed={editMode ? selected : undefined}
   >
     <div
@@ -295,7 +295,7 @@
         >{@html tab.mutedInfo?.muted ? iconAudio : iconAudioOff}</Button
       >
     {/if}
-    {#if tab.pinned || focus[0] === nth || true}
+    {#if tab.pinned || focus[0] === nth}
       <Button
         bind:element={buttons[3]}
         icon={true}
@@ -439,6 +439,17 @@
 
   .selected
     background: color-mix(in srgb, var(--tint-action-primary) 12%, transparent)
+  .selected.focus-main
+    background: color-mix(in srgb, var(--tint-action-primary) 24%, transparent)
+    color: var(--tint-text)
+    .favicon
+      background: var(--tint-input-bg)
+    .tab-button, .tab-button p
+      color: var(--tint-text)
+    .tab-button p
+      color: var(--tint-text-secondary)
+    .actions > :global(button)
+      color: var(--tint-text)
 
   .focus-main .checkbox-area :global(input)
     border-color: var(--tint-action-text)

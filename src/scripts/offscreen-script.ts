@@ -3,7 +3,6 @@ const query = window.matchMedia('(prefers-color-scheme: dark)')
 
 // Notify background script of the current theme
 function notifyThemeChange(): void {
-  console.log('Notifying theme change', query.matches)
   const darkMode = query.matches
   chrome.runtime.sendMessage({ type: 'themeChange', darkMode })
 }

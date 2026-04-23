@@ -1,7 +1,7 @@
 import type { TabGroupMap } from './group-store'
 import * as extAPI from '@src/utils/extension-api'
 
-type ExtendedTab = extAPI.CombinedTab & { [key: string]: any }
+type ExtendedTab = extAPI.CombinedTab & { groupId?: number }
 
 export type IndexInfo =
   | {
@@ -64,7 +64,7 @@ export function findGroups<T extends ExtendedTab>(
 
   // If we are here, there are tab groups
 
-  let groupIndices: IndexInfo[] = []
+  const groupIndices: IndexInfo[] = []
   let currentGroupIndex = NaN
   let currentGroupId = NaN
   let focusIndex = -1

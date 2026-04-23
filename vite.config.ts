@@ -114,9 +114,6 @@ function localeFiles() {
       this.addWatchFile('src/locales/')
     },
     async generateBundle() {
-      const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'))
-      const manifest = JSON.parse(fs.readFileSync('src/manifest.json', 'utf-8'))
-
       const toManifestFormat = (content: { [key: string]: string }) => {
         // the desired format is:
         // key: { message: value }

@@ -35,7 +35,7 @@ const allActions: (MenuItem | boolean)[] = [
     label: 'close-duplicate-tabs',
     onClick: actionGuard(closeDuplicateTabs),
   },
-  hasContainerSupport && {
+  {
     label: 'close-older-than.label',
     items: [
       { label: 'close-older-than.1hour', onClick: () => closeOlderThan(60) },
@@ -70,7 +70,7 @@ const allActions: (MenuItem | boolean)[] = [
     label: 'sort-tabs-by-url',
     onClick: actionGuard(() => sortTabByProperty('url')),
   },
-  hasContainerSupport && {
+  {
     label: 'sort-tabs-by-last-accessed',
     onClick: actionGuard(() => sortTabByProperty('lastAccessed')),
   },
@@ -98,8 +98,6 @@ const allActions: (MenuItem | boolean)[] = [
 ]
 
 export const tabActions = allActions.filter(Boolean) as MenuItem[]
-
-export { closeTabsAbove, closeTabsBelow }
 
 // Close tabs older than X minutes
 async function closeOlderThan(minutes: number) {
@@ -156,10 +154,8 @@ async function sortTabByProperty(
   // tabgroups might get lost, so we need to re-group them
   for (const [groupId, groupTabs] of Object.entries(groups)) {
     if (groupId === '-1') continue
-    await thisBrowser?.tabs.group({
-      tabIds: groupTabs.map((tab) => tab.id!),
-      groupId: parseInt(groupId),
-    })
+    const tabIds = groupTabs.map((tab) => tab.id!) as [number, ...number[]]
+    await thisBrowser?.tabs.group({ tabIds, groupId: parseInt(groupId) })
   }
 }
 
@@ -189,55 +185,47 @@ async function groupTabsBy(groupFn: (tab: CombinedTab) => string) {
     const queryResult = await queryTabGroups({ windowId, title: name })
     // if there are no results, we create a new group
     if (queryResult.length === 0) {
+      const tabIds = tabs.map((tab) => tab.id!) as [number, ...number[]]
       const groupId = await chrome.tabs.group({
         createProperties: { windowId },
-        tabIds: tabs.map((tab) => tab.id!),
+        tabIds,
       })
-      await chrome.tabGroups.update(groupId, {
-        title: name,
-      })
+      await chrome.tabGroups.update(groupId, { title: name })
     } else {
       // we pick the first group and add the tabs to it
       const groupId = queryResult[0].id
-      await chrome.tabs.group({
-        tabIds: tabs.map((tab) => tab.id!),
-        groupId: groupId,
-      })
+      const tabIds = tabs.map((tab) => tab.id!) as [number, ...number[]]
+      await chrome.tabs.group({ tabIds, groupId })
     }
   }
 }
 
-async function closeTabsAbove(currentTabId: number) {
+async function closeTabsInDirection(
+  currentTabId: number,
+  direction: 'above' | 'below',
+) {
   const tabs = await queryTabs({ currentWindow: true })
-  const currentTabIndex = tabs.findIndex(tab => tab.id === currentTabId)
+  const currentTabIndex = tabs.findIndex((tab) => tab.id === currentTabId)
 
-  if (currentTabIndex <= 0) return // No tabs above or tab not found
+  if (currentTabIndex === -1) return
+  if (direction === 'above' && currentTabIndex <= 0) return
+  if (direction === 'below' && currentTabIndex >= tabs.length - 1) return
 
-  const tabsToClose = tabs
-    .slice(0, currentTabIndex)
-    .filter(tab => !tab.pinned && tab.id !== undefined)
-    .map(tab => tab.id!)
+  const tabsToClose = (
+    direction === 'above'
+      ? tabs.slice(0, currentTabIndex)
+      : tabs.slice(currentTabIndex + 1)
+  )
+    .filter((tab) => !tab.pinned && tab.id !== undefined)
+    .map((tab) => tab.id!)
 
   if (tabsToClose.length > 0) {
     await thisBrowser?.tabs.remove(tabsToClose)
   }
 }
 
-async function closeTabsBelow(currentTabId: number) {
-  const tabs = await queryTabs({ currentWindow: true })
-  const currentTabIndex = tabs.findIndex(tab => tab.id === currentTabId)
-
-  if (currentTabIndex === -1 || currentTabIndex >= tabs.length - 1) return // Tab not found or no tabs below
-
-  const tabsToClose = tabs
-    .slice(currentTabIndex + 1)
-    .filter(tab => !tab.pinned && tab.id !== undefined)
-    .map(tab => tab.id!)
-
-  if (tabsToClose.length > 0) {
-    await thisBrowser?.tabs.remove(tabsToClose)
-  }
-}
+export const closeTabsAbove = (id: number) => closeTabsInDirection(id, 'above')
+export const closeTabsBelow = (id: number) => closeTabsInDirection(id, 'below')
 
 async function closeDuplicateTabs() {
   const tabs = await queryTabs({ currentWindow: true })
@@ -280,14 +268,14 @@ export async function moveTabs(
   if (selectedIds.has(draggedTabId) && selectedIds.size > 1) {
     // Multi-select: all selected, sorted by current browser index
     moveIds = allTabs
-      .filter(t => t.id !== undefined && selectedIds.has(t.id))
-      .map(t => t.id!)
+      .filter((t) => t.id !== undefined && selectedIds.has(t.id))
+      .map((t) => t.id!)
   } else {
     moveIds = [draggedTabId]
   }
 
   // Get target's browser index
-  const targetTab = allTabs.find(t => t.id === targetTabId)
+  const targetTab = allTabs.find((t) => t.id === targetTabId)
   if (targetTab?.index === undefined) return
 
   // Compute insert index
@@ -296,7 +284,7 @@ export async function moveTabs(
   // Adjust: chrome.tabs.move index is the position AFTER removing moved tabs
   const moveSet = new Set(moveIds)
   const countBefore = allTabs.filter(
-    t => t.id !== undefined && moveSet.has(t.id) && t.index! < insertIndex,
+    (t) => t.id !== undefined && moveSet.has(t.id) && t.index! < insertIndex,
   ).length
   insertIndex -= countBefore
 
@@ -315,7 +303,8 @@ export function pinTabs(ids: number[], pinned: boolean) {
 }
 
 export async function addTabsToGroup(ids: number[], groupId?: number) {
-  if (!hasTabGroupSupport || typeof chrome === 'undefined' || ids.length === 0) return
+  if (!hasTabGroupSupport || typeof chrome === 'undefined' || ids.length === 0)
+    return
   const tabIds = ids as [number, ...number[]]
   if (groupId !== undefined) {
     await chrome.tabs.group({ tabIds, groupId })
@@ -328,7 +317,8 @@ export async function addTabsToGroup(ids: number[], groupId?: number) {
 }
 
 export async function removeTabsFromGroup(ids: number[]) {
-  if (!hasTabGroupSupport || typeof chrome === 'undefined' || ids.length === 0) return
+  if (!hasTabGroupSupport || typeof chrome === 'undefined' || ids.length === 0)
+    return
   await chrome.tabs.ungroup(ids as [number, ...number[]])
 }
 
@@ -348,7 +338,6 @@ const STRIP = [
   'yclid',
   'wickedid',
   'twclid',
-  '_hsenc',
   '__hssc',
   '__hstc',
   '__hsfp',

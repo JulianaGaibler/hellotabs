@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store'
+import { writable } from 'svelte/store'
 
 interface SelectionState {
   selected: Set<number>
@@ -65,7 +65,11 @@ export function addToSelection(tabId: number, index?: number) {
   selectionStore.update((state) => {
     const selected = new Set(state.selected)
     selected.add(tabId)
-    return { ...state, selected, lastClickedIndex: index ?? state.lastClickedIndex }
+    return {
+      ...state,
+      selected,
+      lastClickedIndex: index ?? state.lastClickedIndex,
+    }
   })
 }
 
@@ -90,16 +94,4 @@ export function exitEditMode() {
     editMode: false,
     lastClickedIndex: null,
   }))
-}
-
-export const selectedCount = derived(selectionStore, ($s) => $s.selected.size)
-
-export const isEditMode = derived(selectionStore, ($s) => $s.editMode)
-
-export function isSelected(tabId: number): boolean {
-  let result = false
-  selectionStore.subscribe((state) => {
-    result = state.selected.has(tabId)
-  })()
-  return result
 }

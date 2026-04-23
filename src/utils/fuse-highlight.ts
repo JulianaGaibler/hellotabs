@@ -1,5 +1,4 @@
-import type { CombinedTab } from './extension-api'
-import type { FuseResult, FuseResultMatch, RangeTuple } from 'fuse.js'
+import type { FuseResult, RangeTuple } from 'fuse.js'
 import he from 'he'
 
 // export type HighlightResult, which for each key has a key of the same type suffixed with _hl
@@ -9,19 +8,19 @@ export type HighlightResult<T> = {
     : string | undefined
 }
 
-export default function <T>(
+export default function fuseHighlight<T>(
   fuseSearchResult: FuseResult<T>[],
   highlightClassName = 'highlight',
 ): HighlightResult<T>[] {
-  const set = (obj: { [key: string]: any }, path: string, value: string) => {
+  const set = (obj: Record<string, unknown>, path: string, value: string) => {
     const pathValue = path.split('.')
-    let i
+    let current: Record<string, unknown> = obj
 
-    for (i = 0; i < pathValue.length - 1; i++) {
-      obj = obj[pathValue[i]]
+    for (let i = 0; i < pathValue.length - 1; i++) {
+      current = current[pathValue[i]] as Record<string, unknown>
     }
 
-    obj[`${pathValue[i]}_hl`] = value
+    current[`${pathValue[pathValue.length - 1]}_hl`] = value
   }
 
   // input text is value of FuseResultMatch
@@ -63,7 +62,7 @@ export default function <T>(
         matches.forEach((match) => {
           if (!match.key || !match.value) return
           set(
-            highlightedItem as any,
+            highlightedItem as unknown as Record<string, unknown>,
             match.key,
             generateHighlightedText(match.value, match.indices),
           )

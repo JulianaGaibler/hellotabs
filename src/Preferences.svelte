@@ -5,7 +5,6 @@
   import {
     hasContainerSupport,
     hasTabGroupSupport,
-    shortcutGet,
   } from '@src/utils/extension-api'
   import Shortcut from '@src/components/preferences/Shortcut.svelte'
   import Language from '@src/components/preferences/Language.svelte'
@@ -23,11 +22,6 @@
   }
 
   let { ontogglepreferences = undefined }: Props = $props()
-
-  let shortcut = ''
-  shortcutGet('_execute_browser_action').then((result) => {
-    shortcut = result || ''
-  })
 </script>
 
 <header class="tint--tinted">
@@ -68,7 +62,7 @@
 <footer class="infobar tint--tinted tint--type-ui-small">
   <p>HelloTabs {VERSION}</p>
   <a
-    href="https://github.com/JulianaGaibler/hello-tabs"
+    href="https://github.com/JulianaGaibler/hellotabs"
     target="_blank"
     rel="noopener">{$_('source-code')}</a
   >
