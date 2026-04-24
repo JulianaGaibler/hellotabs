@@ -322,11 +322,7 @@
         const currentIndex = focus[0]
         toggleSelect(tab.id, currentIndex)
       }
-    } else if (
-      e.key === 'a' &&
-      (e.ctrlKey || e.metaKey) &&
-      !searchFieldFocus
-    ) {
+    } else if (e.key === 'a' && (e.ctrlKey || e.metaKey) && !searchFieldFocus) {
       e.preventDefault()
       selectAll(searchResults)
     } else if (e.key === 'Backspace' && searchString.trim().length > 0) {
@@ -509,7 +505,13 @@
   </div>
 {:else}
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="main-area" tabindex="-1" onmousedown={() => { keyboardNav = false }}>
+  <div
+    class="main-area"
+    tabindex="-1"
+    onmousedown={() => {
+      keyboardNav = false
+    }}
+  >
     {#if hasSelection || editMode}
       <SelectionBar {searchResults} />
     {/if}
@@ -532,8 +534,12 @@
             handleSelector: editMode ? '.drag-handle' : undefined,
             enableKeyboardReorder: !isSearching,
             onreorder: handleReorder,
-            ondragstarted: () => { isDragging = true },
-            ondragended: () => { isDragging = false },
+            ondragstarted: () => {
+              isDragging = true
+            },
+            ondragended: () => {
+              isDragging = false
+            },
             dropGroup: 'tabs',
           }}
         >
