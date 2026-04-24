@@ -25,7 +25,7 @@
     closeTabsBelow,
     moveTabs,
   } from './utils/tab-actions'
-  import { reorderable, type ReorderEventDetail } from 'tint/actions'
+  import { reorderable, tooltip, type ReorderEventDetail } from 'tint/actions'
   import { onMount, untrack } from 'svelte'
   import {
     selectionStore,
@@ -71,6 +71,8 @@
   let editMode = $derived($selectionStore.editMode)
   let isSearching = $derived(searchString.trim().length > 0)
   let pendingFocusTabId: number | null = $state(null)
+  let isDragging = $state(false)
+  let keyboardNav = $state(false)
 
   function handleReorder(detail: ReorderEventDetail) {
     if (isSearching) return
@@ -149,6 +151,7 @@
   }
 
   function onUpdateListItems(r: IndexInfo[]) {
+    if (isDragging) return
     const noSearch = searchString.trim().length === 0
     if (noSearch || !fuse) {
       if (focus[0] === -1) {
@@ -194,7 +197,7 @@
       onUpdateListItems(groupResults.groupIndices)
 
       // After reorder, focus the moved tab at its new position
-      if (pendingFocusTabId !== null) {
+      if (pendingFocusTabId !== null && !isDragging) {
         const tabId = pendingFocusTabId
         pendingFocusTabId = null
         for (const item of groupResults.groupIndices) {
@@ -253,6 +256,7 @@
     }
     if (e.key === 'ArrowDown') {
       e.preventDefault()
+      keyboardNav = true
       searchFieldFocus = false
       if (e.shiftKey) {
         shiftArrowSelect(1)
@@ -261,30 +265,30 @@
       }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
+      keyboardNav = true
       searchFieldFocus = false
       if (e.shiftKey) {
         shiftArrowSelect(-1)
       } else {
         changeFocus(-1)
       }
-    } else if (e.key === 'ArrowLeft') {
+    } else if (e.key === 'ArrowLeft' && !searchFieldFocus) {
       e.preventDefault()
-      searchFieldFocus = false
       const key = getTabAtFocus(focus[0])?.id || '_'
       focusLeftFns[key]?.()
-    } else if (e.key === 'ArrowRight') {
+    } else if (e.key === 'ArrowRight' && !searchFieldFocus) {
       e.preventDefault()
-      searchFieldFocus = false
       const key = getTabAtFocus(focus[0])?.id || '_'
       focusRightFns[key]?.()
     } else if (
-      e.key === 'ContextMenu' ||
-      (e.key === 'F10' && e.shiftKey) ||
-      (e.key === 'm' && (e.ctrlKey || e.metaKey))
+      !searchFieldFocus &&
+      (e.key === 'ContextMenu' ||
+        (e.key === 'F10' && e.shiftKey) ||
+        (e.key === 'm' && (e.ctrlKey || e.metaKey)))
     ) {
       e.preventDefault()
       const focusedTab = getTabAtFocus(focus[0])
-      if (!searchFieldFocus && focus[0] >= 0 && focusedTab) {
+      if (focus[0] >= 0 && focusedTab) {
         const contextHandler = handleContextMenu(focusedTab)
 
         // Create a synthetic mouse event with coordinates for the context menu
@@ -303,6 +307,8 @@
         exitEditMode()
       } else if ($selectionStore.selected.size > 0) {
         deselectAll()
+      } else {
+        window.close()
       }
     } else if (
       e.key === ' ' &&
@@ -316,7 +322,11 @@
         const currentIndex = focus[0]
         toggleSelect(tab.id, currentIndex)
       }
-    } else if (e.key === 'a' && (e.ctrlKey || e.metaKey)) {
+    } else if (
+      e.key === 'a' &&
+      (e.ctrlKey || e.metaKey) &&
+      !searchFieldFocus
+    ) {
       e.preventDefault()
       selectAll(searchResults)
     } else if (e.key === 'Backspace' && searchString.trim().length > 0) {
@@ -458,7 +468,7 @@
   <Button
     icon={true}
     variant="ghost"
-    title={$_('preferences-button')}
+    tooltip={$_('preferences-button')}
     onclick={ontogglepreferences}>{@html HelloTabsIcon}</Button
   >
   <input
@@ -477,7 +487,7 @@
     class="tabs"
     onclick={contextClick}
     onmousedown={contextClick}
-    title={$_('search-tab-counter', { values: { n: $tabs.length } })}
+    use:tooltip={$_('search-tab-counter', { values: { n: $tabs.length } })}
   >
     <span>{$tabs.length}</span>
     {@html iconDropdown}
@@ -498,7 +508,8 @@
     <h2 class="tint--type-title-sans-3">{$_('search-no-result')}</h2>
   </div>
 {:else}
-  <div class="main-area" tabindex="-1">
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div class="main-area" tabindex="-1" onmousedown={() => { keyboardNav = false }}>
     {#if hasSelection || editMode}
       <SelectionBar {searchResults} />
     {/if}
@@ -509,6 +520,7 @@
           bind:focus
           onactionat={handleFocusChange}
           claimFocus={!searchFieldFocus}
+          {keyboardNav}
           nth={item.focusIndex}
           collapsed={item.collapsed}
         />
@@ -520,6 +532,8 @@
             handleSelector: editMode ? '.drag-handle' : undefined,
             enableKeyboardReorder: !isSearching,
             onreorder: handleReorder,
+            ondragstarted: () => { isDragging = true },
+            ondragended: () => { isDragging = false },
             dropGroup: 'tabs',
           }}
         >
@@ -551,6 +565,7 @@
               }}
               oncontextmenu={handleContextMenu(searchResults[tabInfo.tabIndex])}
               claimFocus={!searchFieldFocus}
+              {keyboardNav}
             />
           {/each}
         </ul>

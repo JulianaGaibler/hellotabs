@@ -22,6 +22,7 @@
     nth: number
     focus: [number, number]
     claimFocus: boolean
+    keyboardNav?: boolean
     selected?: boolean
     editMode?: boolean
     onselect?: (tabId: number, event: MouseEvent | KeyboardEvent) => void
@@ -37,6 +38,7 @@
     nth,
     focus = $bindable(),
     claimFocus,
+    keyboardNav = false,
     selected = false,
     editMode = false,
     onselect = undefined,
@@ -114,10 +116,12 @@
 
   function focusElement(f: [number, number]) {
     if (f[0] !== nth) return
-    buttons[1]?.scrollIntoView({
-      behavior: claimFocus ? 'smooth' : 'instant',
-      block: claimFocus ? 'nearest' : 'center',
-    })
+    if (keyboardNav || !claimFocus) {
+      buttons[1]?.scrollIntoView({
+        behavior: claimFocus ? 'smooth' : 'instant',
+        block: claimFocus ? 'nearest' : 'center',
+      })
+    }
     if (!claimFocus) return
     for (let i = f[1]; i < buttons.length; i++) {
       if (buttons[i]) {
@@ -290,7 +294,7 @@
         onkeydown={(e) => runIfEnter(e, toggleMuteTab)}
         small={true}
         tabindex={isFocused(focus, 2) ? 0 : -1}
-        title={$_('mute-tab-button')}
+        tooltip={$_('mute-tab-button')}
         variant="ghost"
         >{@html tab.mutedInfo?.muted ? iconAudio : iconAudioOff}</Button
       >
@@ -303,7 +307,7 @@
         onkeydown={(e) => runIfEnter(e, togglePinTab)}
         small={true}
         tabindex={isFocused(focus, 3) ? 0 : -1}
-        title={$_('pin-tab-button')}
+        tooltip={$_('pin-tab-button')}
         toggled={tab.pinned}
         variant="ghost">{@html tab.pinned ? iconPinFill : iconPin}</Button
       >
@@ -315,7 +319,7 @@
       onkeydown={(e) => runIfEnter(e, closeTab)}
       small={true}
       tabindex={isFocused(focus, 4) ? 0 : -1}
-      title={$_('close-tab-button')}
+      tooltip={$_('close-tab-button')}
       variant="ghost"
       >{@html iconClose}
     </Button>

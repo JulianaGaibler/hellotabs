@@ -87,6 +87,7 @@ function pluginManifest(engine: string) {
 
       if (engine === 'chrome') {
         delete manifest.browser_specific_settings
+        delete manifest.developer
         manifest.permissions = manifest.permissions.filter(
           (p: string) => p !== 'contextualIdentities',
         )

@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-04-23
+
+### Fixed
+
+- Fixed view jumping to the active tab when clicking or dragging tabs
+- Fixed keyboard shortcuts (Ctrl/Cmd+A, arrow keys, context menu) intercepting normal text field actions when the search field is focused
+
 ## [2.2.0] - 2026-04-23
 
 ### Added

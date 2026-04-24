@@ -13,6 +13,7 @@
   import Theme from '@src/components/preferences/Theme.svelte'
   import ShowOverview from '@src/components/preferences/ShowOverview.svelte'
   import SearchAllWindows from '@src/components/preferences/SearchAllWindows.svelte'
+  import { tooltip } from 'tint/actions'
   import GLogo from '@src/assets/g-logo.svg?raw'
   import ShareAndSupport from './components/preferences/ShareAndSupport.svelte'
   const VERSION = __VERSION__
@@ -28,7 +29,7 @@
   <Button
     icon={true}
     variant="ghost"
-    title={$_('back-button')}
+    tooltip={$_('back-button')}
     onclick={() => ontogglepreferences?.()}>{@html BackIcon}</Button
   >
   <h1 class="tint--type-body-sans">{$_('preferences-header')}</h1>
@@ -52,7 +53,7 @@
   <p class="credits">
     Made by <a
       href="https://juliana.me/"
-      title="Juliana Gaibler"
+      use:tooltip={'Juliana Gaibler'}
       target="_blank"
       rel="noopener">{@html GLogo}</a
     > in Berlin

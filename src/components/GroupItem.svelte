@@ -9,6 +9,7 @@
     groupId: number
     focus: [number, number]
     claimFocus: boolean
+    keyboardNav?: boolean
     nth: number
     collapsed: boolean
     onactionat?: (index: number) => void
@@ -18,6 +19,7 @@
     groupId,
     focus = $bindable(),
     claimFocus,
+    keyboardNav = false,
     nth,
     collapsed,
     onactionat = undefined,
@@ -33,10 +35,12 @@
     if (f[0] !== nth) {
       return
     }
-    buttonElement?.scrollIntoView({
-      behavior: claimFocus ? 'smooth' : 'instant',
-      block: claimFocus ? 'nearest' : 'center',
-    })
+    if (keyboardNav || !claimFocus) {
+      buttonElement?.scrollIntoView({
+        behavior: claimFocus ? 'smooth' : 'instant',
+        block: claimFocus ? 'nearest' : 'center',
+      })
+    }
     if (!claimFocus) {
       return
     }
