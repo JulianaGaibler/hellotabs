@@ -43,7 +43,7 @@
     "prettier-plugin-jsdoc": "^1.8.0",
     "prettier-plugin-svelte": "^3.5.1",
     "sass": "^1.98.0",
-    "svelte": "^5.53.12",
+    "svelte": "^5.55.7",
     "svelte-check": "^4.4.6",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.57.0",
