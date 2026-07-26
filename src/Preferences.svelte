@@ -71,18 +71,18 @@
 
 <style lang="sass">
   .grid
-    padding-block: tint.$size-24
-    padding-inline: tint.$size-64 + tint.$size-4
+    padding-block: var(--tint-size-24)
+    padding-inline: calc(var(--tint-size-64) + var(--tint-size-4))
     display: grid
     grid-template-columns: 4fr 3fr
-    gap: tint.$size-24
+    gap: var(--tint-size-24)
     :global(p)
       color: var(--tint-text-secondary)
     > :global(.controls)
       display: flex
       flex-direction: column
       justify-content: center
-      gap: tint.$size-8
+      gap: var(--tint-size-8)
     > :global(.controls.end)
       align-items: flex-end
 
@@ -92,18 +92,18 @@
       text-align: end
 
   .credits
-    padding-block-end: tint.$size-24
-    padding-inline: tint.$size-64 + tint.$size-4
+    padding-block-end: var(--tint-size-24)
+    padding-inline: calc(var(--tint-size-64) + var(--tint-size-4))
     display: flex
     align-items: center
     justify-content: center
     a
       text-decoration: none
       line-height: 0
-      margin-inline: tint.$size-2
+      margin-inline: var(--tint-size-2)
       &:hover
         color: var(--tint-text-link)
     :global(svg)
-      height: tint.$size-24
-      width: tint.$size-24
+      height: var(--tint-size-24)
+      width: var(--tint-size-24)
 </style>

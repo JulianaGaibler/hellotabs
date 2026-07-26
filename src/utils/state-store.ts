@@ -141,8 +141,7 @@ async function initPreferences() {
 
   // migrate from old storage key
   const oldPreferences = (await storageGet(OLD_PREFS_KEY)) as
-    | Preferences
-    | undefined
+    Preferences | undefined
   if (oldPreferences) {
     await storageSet(PREFS_KEY, oldPreferences)
     await thisBrowser?.storage.sync.remove(OLD_PREFS_KEY)

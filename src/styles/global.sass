@@ -43,8 +43,8 @@ body
     background: var(--tint-text-secondary)
     border-radius: 2rem
     // add margin around scrollbar
-    left: 2px
-    right: 2px
+    inset-inline-start: 2px
+    inset-inline-end: 2px
 
 @media (min-width: 1000px)
   html, body
@@ -55,7 +55,8 @@ body
     height: 500px
     box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.25)
     border-radius: 8px
-    margin: 64px auto
+    margin-block: 64px
+    margin-inline: auto
     overflow: hidden
 
 

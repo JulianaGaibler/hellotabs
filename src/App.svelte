@@ -22,20 +22,22 @@
     color: var(--tint-text)
     flex-grow: 1
     > :global(header)
-      padding: tint.$size-4 tint.$size-8
-      gap: tint.$size-12
+      padding-block: var(--tint-size-4)
+      padding-inline: var(--tint-size-8)
+      gap: var(--tint-size-12)
       align-items: center
       display: flex
       background: var(--tint-bg)
-      border-bottom: 1px solid var(--tint-input-bg)
+      border-block-end: 1px solid var(--tint-input-bg)
       flex-shrink: 0
     > :global(.main-area)
       flex-grow: 1
       overflow-x: auto
       background: var(--tint-bg)
     > :global(.infobar)
-      padding: tint.$size-4 tint.$size-8
-      gap: tint.$size-12
+      padding-block: var(--tint-size-4)
+      padding-inline: var(--tint-size-8)
+      gap: var(--tint-size-12)
       align-items: center
       display: flex
       background: var(--tint-input-bg)

@@ -341,14 +341,14 @@
     border: none
     border-radius: 0
     background: none
-    padding: tint.$size-12
+    padding: var(--tint-size-12)
     text-transform: none
     text-align: start
     min-width: 0
-    gap: tint.$size-16
-    margin-inline-end: tint.$size-8
-    border-top-right-radius: tint.$size-8
-    border-bottom-right-radius: tint.$size-8
+    gap: var(--tint-size-16)
+    margin-inline-end: var(--tint-size-8)
+    border-block-start-right-radius: var(--tint-size-8)
+    border-block-end-right-radius: var(--tint-size-8)
     position: relative
     .text
       flex-grow: 1
@@ -356,7 +356,7 @@
     &:focus-visible
       outline: 2px solid var(--tint-action-primary)
       outline-offset: -2px
-      border-radius: tint.$size-8
+      border-radius: var(--tint-size-8)
     &:active
       background: var(--tint-action-secondary-active)
 
@@ -367,7 +367,7 @@
 
   p
     color: var(--tint-text-secondary)
-    margin-block-start: tint.$size-2
+    margin-block-start: var(--tint-size-2)
 
   .favicon.grouped
     outline: 2px solid var(--special-color-bg)
@@ -377,13 +377,13 @@
       box-shadow: 0 0 0 4px #00000066, inset 0 0 0 2px #00000066
 
   .favicon
-    padding: tint.$size-12
+    padding: var(--tint-size-12)
     background: var(--tint-input-bg)
     line-height: 0
     border-radius: 50%
     > img, > span > :global(svg)
-      width: tint.$size-16
-      height: tint.$size-16
+      width: var(--tint-size-16)
+      height: var(--tint-size-16)
       fill: currentColor
     > span
       color: var(--tint-text-secondary)
@@ -393,7 +393,7 @@
     box-shadow: inset 0 0 0 1px rgba(0,0,0, 0.1)
 
   .actions
-    padding-inline-end: tint.$size-8
+    padding-inline-end: var(--tint-size-8)
     flex-shrink: 0
     > :global(button:not(.primary))
       color: var(--tint-text)
@@ -427,19 +427,19 @@
     // every item after the last one gets a utf-8 dot after it
     > :global(p:not(:first-child))::before
       content: '—'
-      margin-inline: tint.$size-4
+      margin-inline: var(--tint-size-4)
 
   .container
     display: flex
     align-items: center
-    gap: tint.$size-4
+    gap: var(--tint-size-4)
     flex-shrink: 0
     color: var(--special-color)
     span
       line-height: 0
     :global(> span > svg)
-      height: tint.$size-12
-      width: tint.$size-12
+      height: var(--tint-size-12)
+      width: var(--tint-size-12)
 
   .selected
     background: color-mix(in srgb, var(--tint-action-primary) 12%, transparent)
@@ -464,7 +464,7 @@
   .drag-handle
     display: flex
     align-items: center
-    padding-inline-start: tint.$size-8
+    padding-inline-start: var(--tint-size-8)
     color: var(--tint-text-secondary)
     line-height: 0
     cursor: grab
@@ -478,6 +478,6 @@
   .checkbox-area
     display: flex
     align-items: center
-    padding-inline-start: tint.$size-12
+    padding-inline-start: var(--tint-size-12)
     flex-shrink: 0
 </style>

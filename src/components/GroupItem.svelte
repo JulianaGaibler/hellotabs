@@ -75,17 +75,17 @@
 
 <style lang="sass">
 .group-title
-  margin-inline: tint.$size-12
+  margin-inline: var(--tint-size-12)
   line-height: 0
   > button
     border: none
     line-height: initial
     display: inline-block
-    border-radius: tint.$size-64
+    border-radius: var(--tint-size-64)
     background: var(--special-color-bg)
     color: var(--special-color)
-    padding-block: tint.$size-2
-    padding-inline: tint.$size-8
+    padding-block: var(--tint-size-2)
+    padding-inline: var(--tint-size-8)
     overflow: hidden
     text-overflow: ellipsis
     white-space: nowrap
@@ -94,7 +94,7 @@
     display: flex
     align-items: center
     justify-content: center
-    gap: tint.$size-4
+    gap: var(--tint-size-4)
     position: relative
     &:focus-visible, &.focus
       outline: 2px solid var(--tint-action-primary)

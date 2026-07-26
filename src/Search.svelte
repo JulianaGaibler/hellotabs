@@ -598,14 +598,14 @@
   .tabs
     border: none
     background: var(--tint-input-bg)
-    padding: tint.$size-4 + tint.$size-2
-    padding-block-start: tint.$size-4 + tint.$size-2 + 2px
-    border-radius: tint.$size-8
+    padding: calc(var(--tint-size-4) + var(--tint-size-2))
+    padding-block-start: calc(var(--tint-size-4) + var(--tint-size-2) + 2px)
+    border-radius: var(--tint-size-8)
     line-height: 1
     display: flex
     align-items: center
-    margin-inline-end: tint.$size-8
-    gap: tint.$size-2
+    margin-inline-end: var(--tint-size-8)
+    gap: var(--tint-size-2)
     > :global(*)
       pointer-events: none
     > :global(svg)
@@ -631,6 +631,6 @@
     align-items: center
     height: 100%
     flex-grow: 1
-    gap: tint.$size-16
-    margin-block: tint.$size-32
+    gap: var(--tint-size-16)
+    margin-block: var(--tint-size-32)
 </style>

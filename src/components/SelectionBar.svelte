@@ -182,20 +182,21 @@
     display: flex
     align-items: center
     justify-content: space-between
-    padding: tint.$size-8 tint.$size-12
+    padding-block: var(--tint-size-8)
+    padding-inline: var(--tint-size-12)
     position: sticky
-    top: 0
+    inset-block-start: 0
     z-index: 10
     background: var(--tint-bg)
-    border-bottom: 1px solid var(--tint-input-bg)
+    border-block-end: 1px solid var(--tint-input-bg)
 
   .selection-bar-left
     display: flex
     align-items: center
-    gap: tint.$size-8
+    gap: var(--tint-size-8)
 
   .selection-bar-right
     display: flex
     align-items: center
-    gap: tint.$size-4
+    gap: var(--tint-size-4)
 </style>
