@@ -49,8 +49,11 @@ export async function queryTabs(
   return (await thisBrowser.tabs.query(options)) as CombinedTab[]
 }
 
-export function openTab(id: number) {
-  updateTabs(id, { active: true })
+export async function openTab(id: number) {
+  const tab = await updateTabs(id, { active: true })
+  if (thisBrowser && tab?.windowId !== undefined) {
+    await thisBrowser.windows.update(tab.windowId, { focused: true })
+  }
   window.close()
 }
 
