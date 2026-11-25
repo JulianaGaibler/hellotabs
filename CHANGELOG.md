@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed selecting a tab in another window not bringing that window to the front
+
 ## [2.2.1] - 2026-04-23
 
 ### Fixed
